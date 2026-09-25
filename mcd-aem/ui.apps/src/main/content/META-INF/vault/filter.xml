@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workspaceFilter version="1.0">
+    <filter root="/apps/mcd/clientlibs"/>
+    <filter root="/apps/mcd/components"/>
+    <filter root="/apps/mcd/i18n"/>
+</workspaceFilter>

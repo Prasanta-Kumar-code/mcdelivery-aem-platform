@@ -1,0 +1,26 @@
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+frontend/.env*
+
+# Node / Next.js
+**/node_modules/
+**/.next/
+**/out/
+**/build/
+**/coverage/
+**/*.tsbuildinfo
+
+# Java / Maven
+**/target/
+**/.vlt/
+
+# IDE and OS
+.idea/
+.vscode/
+.DS_Store
+*.iml
+
+# Legacy nested repository metadata
+frontend/.git-frontend-history/
