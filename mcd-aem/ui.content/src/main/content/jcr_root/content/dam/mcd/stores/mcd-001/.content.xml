@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:dam="http://www.day.com/dam/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0"
+    jcr:primaryType="dam:Asset">
+    <jcr:content
+        jcr:primaryType="dam:AssetContent"
+        jcr:title="McDelivery MG Road"
+        jcr:description="MG Road, Central Market, Bengaluru, Karnataka 560001"
+        contentFragment="{Boolean}true">
+        <metadata
+            jcr:primaryType="nt:unstructured"
+            cq:tags="[]"/>
+        <data
+            jcr:primaryType="nt:unstructured"
+            cq:model="/conf/mcd/settings/dam/cfm/models/store">
+            <master
+                jcr:primaryType="nt:unstructured"
+            storeId="mcd-001"
+            name="McDelivery MG Road"
+            address="MG Road, Central Market, Bengaluru, Karnataka 560001"
+            latitude="12.9756"
+            longitude="77.6060"
+            timezone="Asia/Kolkata"
+            phone="+91 80 4000 1000"
+            openingHours="Mon-Sun 07:00-23:00"
+            serviceModes="Delivery, Takeaway, Drive-thru"
+            deliveryRadius="{Long}8"
+            isActive="{Boolean}true"
+            temporaryClosure="{Boolean}false"
+            locale="en-IN"/>
+        </data>
+    </jcr:content>
+</jcr:root>

@@ -2,10 +2,9 @@
 <workspaceFilter version="1.0">
     <filter root="/conf/mcd" mode="merge"/>
     <filter root="/content/mcd" mode="merge"/>
-    <filter root="/content/dam/mcd" mode="merge">
-        <exclude pattern="/content/dam/mcd(/.*)?"/>
-        <include pattern="/content/dam/mcd/jcr:content(/.*)?"/>
-    </filter>
-    <filter root="/content/dam/mcd/asset.jpg" mode="merge"/>
+    <!-- Menu fragments, experience fragments and the project GraphQL endpoint.
+         mode="merge" keeps authored DAM content outside the package intact. -->
+    <filter root="/content/dam/mcd" mode="merge"/>
     <filter root="/content/experience-fragments/mcd" mode="merge"/>
+    <filter root="/content/cq:graphql" mode="merge"/>
 </workspaceFilter>

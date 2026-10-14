@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import CategoryBar from "@/components/CategoryBar";
 import ProductCard from "@/components/ProductCard";
 import { Category } from "@/types/category";
@@ -9,11 +8,12 @@ import { Product } from "@/types/product";
 export default function MenuBrowser({
   categories,
   products,
+  selectedCategory,
 }: {
   readonly categories: Category[];
   readonly products: Product[];
+  readonly selectedCategory: string;
 }) {
-  const [selectedCategory, setSelectedCategory] = useState("all");
   const visibleProducts = selectedCategory === "all"
     ? products
     : products.filter((product) => product.category === selectedCategory);
@@ -27,7 +27,6 @@ export default function MenuBrowser({
             ...categories,
           ]}
           selectedCategory={selectedCategory}
-          onSelect={setSelectedCategory}
         />
 
         <section aria-labelledby="menu-heading">

@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Plain CommonJS launcher scripts run by `node <script>`; require() is
+    // the correct module system there.
+    "*.cjs",
   ]),
 ]);
 

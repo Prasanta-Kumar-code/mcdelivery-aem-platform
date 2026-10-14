@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" xmlns:granite="http://www.adobe.com/jcr/granite/1.0"
+    jcr:primaryType="cq:Template"
+    allowedPaths="[/content/dam/mcd/stores(/.*)?]"
+    ranking="{Long}100">
+    <jcr:content
+        cq:scaffolding="/conf/mcd/settings/dam/cfm/models/store/jcr:content/model"
+        cq:templateType="/libs/settings/dam/cfm/model-types/fragment"
+        jcr:primaryType="cq:PageContent"
+        jcr:title="Store"
+        sling:resourceSuperType="dam/cfm/models/console/components/data/entity"
+        sling:resourceType="dam/cfm/models/console/components/data/entity/default">
+        <model
+            cq:targetPath="/content/dam/mcd/stores"
+            jcr:primaryType="cq:PageContent"
+            sling:resourceType="wcm/scaffolding/components/scaffolding"
+            dataTypesConfig="/mnt/overlay/settings/dam/cfm/models/formbuilderconfig/datatypes"
+            maxGeneratedOrder="50">
+            <cq:dialog
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="cq/gui/components/authoring/dialog">
+                <content
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="granite/ui/components/coral/foundation/fixedcolumns">
+                    <items
+                        jcr:primaryType="nt:unstructured"
+                        maxGeneratedOrder="50">
+                        <storeId
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+        cfm-element="Store ID"
+        fieldLabel="Store ID"
+        listOrder="1"
+        metaType="text-single"
+        name="storeId"
+        renderReadOnly="false"
+        showEmptyInReadOnly="true"
+        valueType="string"
+        required="{Boolean}true"/>
+                        <name
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+        cfm-element="Name"
+        fieldLabel="Name"
+        listOrder="2"
+        metaType="text-single"
+        name="name"
+        renderReadOnly="false"
+        showEmptyInReadOnly="true"
+        valueType="string"
+        required="{Boolean}true"/>
+                        <address
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="dam/cfm/admin/components/authoring/contenteditor/multieditor"
+        cfm-element="Address"
+        fieldLabel="Address"
+        listOrder="3"
+        metaType="text-multi"
+        name="address"
+        renderReadOnly="false"
+        showEmptyInReadOnly="true"
+        valueType="string"/>
+                        <latitude
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+        cfm-element="Latitude"
+        fieldLabel="Latitude"
+        listOrder="4"
+        metaType="text-single"
+        name="latitude"
+        renderReadOnly="false"
+        showEmptyInReadOnly="true"
+        valueType="string"/>
+                        <longitude
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+        cfm-element="Longitude"
+        fieldLabel="Longitude"
+        listOrder="5"
+        metaType="text-single"
+        name="longitude"
+        renderReadOnly="false"
+        showEmptyInReadOnly="true"
+        valueType="string"/>
+                        <timezone
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+        cfm-element="Timezone (IANA)"
+        fieldLabel="Timezone (IANA)"
+        listOrder="6"
+        metaType="text-single"
+        name="timezone"
+        renderReadOnly="false"
+        showEmptyInReadOnly="true"
+        valueType="string"/>
+                        <phone
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+        cfm-element="Phone"
+        fieldLabel="Phone"
+        listOrder="7"
+        metaType="text-single"
+        name="phone"
+        renderReadOnly="false"
+        showEmptyInReadOnly="true"
+        valueType="string"/>
+                        <openingHours
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="dam/cfm/admin/components/authoring/contenteditor/multieditor"
+        cfm-element="Opening hours"
+        fieldLabel="Opening hours"
+        listOrder="8"
+        metaType="text-multi"
+        name="openingHours"
+        renderReadOnly="false"
+        showEmptyInReadOnly="true"
+        valueType="string"/>
+                        <serviceModes
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+        cfm-element="Service modes"
+        fieldLabel="Service modes"
+        listOrder="9"
+        metaType="text-single"
+        name="serviceModes"
+        renderReadOnly="false"
+        showEmptyInReadOnly="true"
+        valueType="string"
+        emptyText="Delivery, Dine-in, Takeaway, Drive-thru"/>
+                        <deliveryRadius
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/coral/foundation/form/numberfield"
+        cfm-element="Delivery radius (km)"
+        fieldLabel="Delivery radius (km)"
+        listOrder="10"
+        metaType="number"
+        name="deliveryRadius"
+        renderReadOnly="false"
+        showEmptyInReadOnly="true"
+        valueType="long"
+        typeHint="long"/>
+                        <isActive
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/coral/foundation/form/checkbox"
+        cfm-element="Active"
+        fieldLabel="Active"
+        listOrder="11"
+        metaType="boolean"
+        name="isActive"
+        renderReadOnly="false"
+        showEmptyInReadOnly="true"
+        valueType="boolean"
+        text="Listed for customers"/>
+                        <temporaryClosure
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/coral/foundation/form/checkbox"
+        cfm-element="Temporarily closed"
+        fieldLabel="Temporarily closed"
+        listOrder="12"
+        metaType="boolean"
+        name="temporaryClosure"
+        renderReadOnly="false"
+        showEmptyInReadOnly="true"
+        valueType="boolean"
+        text="Temporarily closed"/>
+                        <locale
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+        cfm-element="Locale (BCP 47)"
+        fieldLabel="Locale (BCP 47)"
+        listOrder="13"
+        metaType="text-single"
+        name="locale"
+        renderReadOnly="false"
+        showEmptyInReadOnly="true"
+        valueType="string"/>
+                    </items>
+                </content>
+            </cq:dialog>
+        </model>
+    </jcr:content>
+</jcr:root>

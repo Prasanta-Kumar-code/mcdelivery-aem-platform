@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:dam="http://www.day.com/dam/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0"
+    jcr:primaryType="dam:Asset">
+    <jcr:content
+        jcr:primaryType="dam:AssetContent"
+        jcr:title="Buy 1 Get 1 Burgers"
+        jcr:description="Buy any classic burger and get one free, every Wednesday."
+        contentFragment="{Boolean}true">
+        <metadata
+            jcr:primaryType="nt:unstructured"
+            cq:tags="[]"/>
+        <data
+            jcr:primaryType="nt:unstructured"
+            cq:model="/conf/mcd/settings/dam/cfm/models/offer">
+            <master
+                jcr:primaryType="nt:unstructured"
+            offerId="BOGO-WED"
+            title="Buy 1 Get 1 Burgers"
+            description="Buy any classic burger and get one free, every Wednesday."
+            offerType="BOGO"
+            value="{Long}1"
+            currency="INR"
+            promoCode="BOGOWED"
+            startAt="{Date}2026-01-01T00:00:00.000Z"
+            endAt="{Date}2026-12-31T23:59:59.000Z"
+            minimumSubtotal="{Long}0"
+            isActive="{Boolean}true"
+            terms="Valid on select classic burgers. Cheapest item is free. Dine-in, takeaway and delivery."
+            locale="en-IN"/>
+        </data>
+    </jcr:content>
+</jcr:root>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:dam="http://www.day.com/dam/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0"
+    jcr:primaryType="dam:Asset">
+    <jcr:content
+        jcr:primaryType="dam:AssetContent"
+        jcr:title="McDelivery Station Road"
+        jcr:description="Station Road, Lucknow, Uttar Pradesh 226001"
+        contentFragment="{Boolean}true">
+        <metadata
+            jcr:primaryType="nt:unstructured"
+            cq:tags="[]"/>
+        <data
+            jcr:primaryType="nt:unstructured"
+            cq:model="/conf/mcd/settings/dam/cfm/models/store">
+            <master
+                jcr:primaryType="nt:unstructured"
+            storeId="mcd-003"
+            name="McDelivery Station Road"
+            address="Station Road, Lucknow, Uttar Pradesh 226001"
+            latitude="26.8467"
+            longitude="80.9462"
+            timezone="Asia/Kolkata"
+            phone="+91 522 4000 3000"
+            openingHours="Mon-Sun 08:00-23:30"
+            serviceModes="Delivery, Takeaway"
+            deliveryRadius="{Long}7"
+            isActive="{Boolean}true"
+            temporaryClosure="{Boolean}false"
+            locale="en-IN"/>
+        </data>
+    </jcr:content>
+</jcr:root>

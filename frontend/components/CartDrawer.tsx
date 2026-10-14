@@ -2,12 +2,9 @@
 
 import { useEffect } from "react";
 import { useCartStore } from "@/store/cart-store";
+import { formatMoney } from "@/lib/format";
 
-const currencyFormatter = new Intl.NumberFormat("en-IN", {
-  style: "currency",
-  currency: "INR",
-  maximumFractionDigits: 0,
-});
+const CART_MAX_QUANTITY = 20;
 
 export default function CartDrawer() {
   const items = useCartStore((state) => state.items);
@@ -40,12 +37,16 @@ export default function CartDrawer() {
     0
   );
 
+  const close = () => {
+    closeCart();
+  };
+
   return (
-    <div className="fixed inset-0 z-20">
+    <div className="fixed inset-0 z-50">
       <button
         type="button"
         aria-label="Close cart"
-        onClick={closeCart}
+        onClick={close}
         className="absolute inset-0 h-full w-full bg-black/40"
       />
 
@@ -63,7 +64,7 @@ export default function CartDrawer() {
           </div>
           <button
             type="button"
-            onClick={closeCart}
+            onClick={close}
             className="rounded-full px-3 py-2 text-sm font-semibold hover:bg-[#f5e8c9]"
           >
             Close
@@ -83,7 +84,7 @@ export default function CartDrawer() {
                   <div>
                     <h3 className="font-semibold">{item.product.title}</h3>
                     <p className="text-sm text-[#746a61]">
-                      {currencyFormatter.format(item.product.price)} each
+                      {formatMoney(item.product.price)} each
                     </p>
                     <div className="mt-3 flex items-center gap-2">
                       <button
@@ -93,6 +94,7 @@ export default function CartDrawer() {
                         }
                         className="h-8 w-8 rounded-full border border-[#e8dfd4] font-bold hover:bg-[#f5e8c9]"
                         aria-label={`Decrease ${item.product.title} quantity`}
+                        disabled={item.quantity <= 1}
                       >
                         -
                       </button>
@@ -104,6 +106,7 @@ export default function CartDrawer() {
                         }
                         className="h-8 w-8 rounded-full border border-[#e8dfd4] font-bold hover:bg-[#f5e8c9]"
                         aria-label={`Increase ${item.product.title} quantity`}
+                        disabled={item.quantity >= CART_MAX_QUANTITY}
                       >
                         +
                       </button>
@@ -117,7 +120,7 @@ export default function CartDrawer() {
                     </div>
                   </div>
                   <span className="font-semibold">
-                    {currencyFormatter.format(item.product.price * item.quantity)}
+                    {formatMoney(item.product.price * item.quantity)}
                   </span>
                 </li>
               ))}
@@ -126,7 +129,7 @@ export default function CartDrawer() {
             <div className="border-t border-[#e8dfd4] pt-4">
               <div className="flex justify-between text-lg font-bold">
                 <span>Subtotal</span>
-                <span>{currencyFormatter.format(subtotal)}</span>
+                <span>{formatMoney(subtotal)}</span>
               </div>
               <button
                 type="button"

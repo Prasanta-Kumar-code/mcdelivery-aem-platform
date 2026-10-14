@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:dam="http://www.day.com/dam/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0"
+    jcr:primaryType="dam:Asset">
+    <jcr:content
+        jcr:primaryType="dam:AssetContent"
+        jcr:title="Veggie Breakfast Muffin"
+        jcr:description="Grilled veggie patty, cheese and sauce in a warm muffin for a quick morning bite."
+        contentFragment="{Boolean}true">
+        <metadata
+            jcr:primaryType="nt:unstructured"
+            cq:tags="[]"/>
+        <data
+            jcr:primaryType="nt:unstructured"
+            cq:model="/conf/mcd/settings/dam/cfm/models/product">
+            <master
+                jcr:primaryType="nt:unstructured"
+            title="Veggie Breakfast Muffin"
+            sku="MCD-BKF-002"
+            description="Grilled veggie patty, cheese and sauce in a warm muffin for a quick morning bite."
+            price="{Long}169"
+            currency="INR"
+            category="breakfast"
+            isVeg="{Boolean}true"
+            allergens="Milk, Wheat"
+            availability="AVAILABLE"
+            displayOrder="{Long}1"
+            isActive="{Boolean}true"/>
+        </data>
+    </jcr:content>
+</jcr:root>

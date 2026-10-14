@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:dam="http://www.day.com/dam/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0"
+    jcr:primaryType="dam:Asset">
+    <jcr:content
+        jcr:primaryType="dam:AssetContent"
+        jcr:title="Oreo McFlurry"
+        jcr:description="Creamy soft serve blended with crunchy Oreo cookie pieces."
+        contentFragment="{Boolean}true">
+        <metadata
+            jcr:primaryType="nt:unstructured"
+            cq:tags="[]"/>
+        <data
+            jcr:primaryType="nt:unstructured"
+            cq:model="/conf/mcd/settings/dam/cfm/models/product">
+            <master
+                jcr:primaryType="nt:unstructured"
+            title="Oreo McFlurry"
+            sku="MCD-DES-001"
+            description="Creamy soft serve blended with crunchy Oreo cookie pieces."
+            price="{Long}229"
+            currency="INR"
+            category="desserts"
+            isVeg="{Boolean}true"
+            allergens="Milk, Wheat"
+            availability="AVAILABLE"
+            displayOrder="{Long}1"
+            isActive="{Boolean}true"/>
+        </data>
+    </jcr:content>
+</jcr:root>

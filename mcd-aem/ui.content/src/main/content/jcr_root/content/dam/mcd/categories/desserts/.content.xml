@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:dam="http://www.day.com/dam/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0"
+    jcr:primaryType="dam:Asset">
+    <jcr:content
+        jcr:primaryType="dam:AssetContent"
+        jcr:title="Desserts &amp; Shakes"
+        jcr:description="Sundaes, McFlurry and warm pies for the sweet finish."
+        contentFragment="{Boolean}true">
+        <metadata
+            jcr:primaryType="nt:unstructured"
+            cq:tags="[]"/>
+        <data
+            jcr:primaryType="nt:unstructured"
+            cq:model="/conf/mcd/settings/dam/cfm/models/category">
+            <master
+                jcr:primaryType="nt:unstructured"
+            title="Desserts &amp; Shakes"
+            slug="desserts"
+            description="Sundaes, McFlurry and warm pies for the sweet finish."
+            displayOrder="{Long}5"
+            isActive="{Boolean}true"
+            locale="en-IN"/>
+        </data>
+    </jcr:content>
+</jcr:root>

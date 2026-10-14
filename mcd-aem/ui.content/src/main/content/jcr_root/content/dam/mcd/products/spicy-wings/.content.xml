@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:dam="http://www.day.com/dam/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0"
+    jcr:primaryType="dam:Asset">
+    <jcr:content
+        jcr:primaryType="dam:AssetContent"
+        jcr:title="6 pc Spicy Chicken Wings"
+        jcr:description="Crispy wings tossed in a smoky spicy glaze. Best finished with a cold drink."
+        contentFragment="{Boolean}true">
+        <metadata
+            jcr:primaryType="nt:unstructured"
+            cq:tags="[]"/>
+        <data
+            jcr:primaryType="nt:unstructured"
+            cq:model="/conf/mcd/settings/dam/cfm/models/product">
+            <master
+                jcr:primaryType="nt:unstructured"
+            title="6 pc Spicy Chicken Wings"
+            sku="MCD-CHK-003"
+            description="Crispy wings tossed in a smoky spicy glaze. Best finished with a cold drink."
+            price="{Long}349"
+            currency="INR"
+            category="chicken"
+            isVeg="{Boolean}false"
+            allergens="Milk, Wheat, Soy"
+            availability="AVAILABLE"
+            displayOrder="{Long}1"
+            isActive="{Boolean}true"/>
+        </data>
+    </jcr:content>
+</jcr:root>

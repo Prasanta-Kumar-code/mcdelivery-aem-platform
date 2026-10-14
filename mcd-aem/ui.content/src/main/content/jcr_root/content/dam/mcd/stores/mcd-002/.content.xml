@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:dam="http://www.day.com/dam/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0"
+    jcr:primaryType="dam:Asset">
+    <jcr:content
+        jcr:primaryType="dam:AssetContent"
+        jcr:title="McDelivery City Centre"
+        jcr:description="42 Harbour Street, Mumbai, Maharashtra 400001"
+        contentFragment="{Boolean}true">
+        <metadata
+            jcr:primaryType="nt:unstructured"
+            cq:tags="[]"/>
+        <data
+            jcr:primaryType="nt:unstructured"
+            cq:model="/conf/mcd/settings/dam/cfm/models/store">
+            <master
+                jcr:primaryType="nt:unstructured"
+            storeId="mcd-002"
+            name="McDelivery City Centre"
+            address="42 Harbour Street, Mumbai, Maharashtra 400001"
+            latitude="19.0760"
+            longitude="72.8777"
+            timezone="Asia/Kolkata"
+            phone="+91 22 4000 2000"
+            openingHours="Mon-Sun 08:00-01:00"
+            serviceModes="Delivery, Dine-in, Takeaway"
+            deliveryRadius="{Long}6"
+            isActive="{Boolean}true"
+            temporaryClosure="{Boolean}false"
+            locale="en-IN"/>
+        </data>
+    </jcr:content>
+</jcr:root>

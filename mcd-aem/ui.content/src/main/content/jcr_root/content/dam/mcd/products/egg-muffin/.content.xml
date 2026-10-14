@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:dam="http://www.day.com/dam/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0"
+    jcr:primaryType="dam:Asset">
+    <jcr:content
+        jcr:primaryType="dam:AssetContent"
+        jcr:title="Egg and Cheese Muffin"
+        jcr:description="A folded egg and melted cheese in a toasted English muffin."
+        contentFragment="{Boolean}true">
+        <metadata
+            jcr:primaryType="nt:unstructured"
+            cq:tags="[]"/>
+        <data
+            jcr:primaryType="nt:unstructured"
+            cq:model="/conf/mcd/settings/dam/cfm/models/product">
+            <master
+                jcr:primaryType="nt:unstructured"
+            title="Egg and Cheese Muffin"
+            sku="MCD-BKF-001"
+            description="A folded egg and melted cheese in a toasted English muffin."
+            price="{Long}179"
+            currency="INR"
+            category="breakfast"
+            isVeg="{Boolean}false"
+            allergens="Milk, Wheat, Soy"
+            availability="AVAILABLE"
+            displayOrder="{Long}1"
+            isActive="{Boolean}true"/>
+        </data>
+    </jcr:content>
+</jcr:root>

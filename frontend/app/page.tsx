@@ -1,47 +1,56 @@
 import Header from "@/components/Header";
+import Hero from "@/components/Hero";
+import DealsStrip from "@/components/DealsStrip";
 import MenuBrowser from "@/components/MenuBrowser";
+import StoreLocator from "@/components/StoreLocator";
+import Footer from "@/components/Footer";
+import SourceBanner from "@/components/SourceBanner";
 import CartDrawer from "@/components/CartDrawer";
+import { fetchMenuData } from "@/services/aem-api";
 
-import {
-  getProducts,
-  getCategories,
-} from "@/services/aem-api";
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Promise<{
+    category?: string | string[];
+  }>;
+}) {
+  const params = await searchParams;
+  const requestedCategory =
+    typeof params.category === "string" ? params.category : undefined;
 
-export default async function Home() {
-  const productResult =
-    await getProducts();
+  const menu = await fetchMenuData();
 
-  const categoryResult =
-    await getCategories();
-
-  const products =
-    productResult.data.productList.items;
-
-  const categories =
-    categoryResult.data.categoryList.items;
+  const validCategories = new Set(menu.categories.map((category) => category.slug));
+  const selectedCategory =
+    requestedCategory && validCategories.has(requestedCategory)
+      ? requestedCategory
+      : "all";
 
   return (
     <main className="site-shell">
-      <Header />
+      <Header storeName={menu.stores[0]?.name} />
 
-      <section className="hero" aria-labelledby="hero-heading">
-        <div className="hero-copy">
-          <span className="eyebrow">Your favourites, freshly made</span>
-          <h1 id="hero-heading">Good food.<br />Good mood.</h1>
-          <p>
-            Build a meal that hits the spot. Browse the menu, choose your favourites,
-            and get ordering.
-          </p>
-        </div>
-        <div className="hero-art" aria-hidden="true">
-          <span className="hero-note">Made for sharing</span>
-        </div>
-      </section>
+      <Hero />
+
+      <DealsStrip offers={menu.offers} />
 
       <MenuBrowser
-        categories={categories}
-        products={products}
+        categories={menu.categories}
+        products={menu.products}
+        selectedCategory={selectedCategory}
       />
+
+      <StoreLocator stores={menu.stores} />
+
+      <Footer />
+
+      {menu.source !== "aem" && (
+        <SourceBanner
+          degraded={menu.degraded}
+          products={menu.products}
+        />
+      )}
 
       <CartDrawer />
     </main>

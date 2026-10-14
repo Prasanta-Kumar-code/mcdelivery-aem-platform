@@ -5,26 +5,29 @@ import { Category } from "@/types/category";
 export default function CategoryBar({
   categories,
   selectedCategory,
-  onSelect,
 }: {
   readonly categories: Category[];
   readonly selectedCategory: string;
-  readonly onSelect: (slug: string) => void;
 }) {
   return (
     <nav aria-label="Menu categories" className="category-bar">
-      {categories.map((category) => (
-        <button
-          key={category.slug}
-          type="button"
-          onClick={() => onSelect(category.slug)}
-          aria-pressed={selectedCategory === category.slug}
-          data-active={selectedCategory === category.slug}
-          className="category-button"
-        >
-          {category.title}
-        </button>
-      ))}
+      {categories.map((category) => {
+        const active = selectedCategory === category.slug;
+        const href = category.slug === "all" ? "/" : `/?category=${category.slug}`;
+
+        return (
+          <a
+            key={category.slug}
+            className="category-button"
+            href={href}
+            aria-current={active ? "true" : undefined}
+            data-active={active}
+
+          >
+            {category.title}
+          </a>
+        );
+      })}
     </nav>
   );
 }
