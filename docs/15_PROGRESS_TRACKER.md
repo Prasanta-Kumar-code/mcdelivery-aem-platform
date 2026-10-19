@@ -1,11 +1,11 @@
 # Progress Tracker
 
-**Last reviewed:** 2026-09-25  
+**Last reviewed:** 2026-10-19  
 **Tracking rule:** Update this document when a task changes state and link the evidence in the relevant pull request, test report, or decision record.
 
 ## Current Status
 
-The repository has the initial AEM Content Fragment Models, product and category fragments, an AEM GraphQL endpoint, Next.js GraphQL integration, a product grid, category navigation, and a Zustand cart counter. The planning baseline is now documented. The platform is not yet MVP-complete: transactional backend services, PostgreSQL persistence, checkout, automated cross-stack CI, authentication, and release hardening remain.
+The repository has an AEM-first storefront: commerce Content Fragments (products, categories, offers, stores) plus page-level authoring fragments (site settings, hero, page sections, navigation links, feature flags). Every displayed string, section order and feature switch is authored in AEM and read over GraphQL; the Next.js app keeps only a seed fallback. The planning baseline is documented. The platform is not yet MVP-complete: transactional backend services, PostgreSQL persistence, checkout, automated cross-stack CI, authentication, and release hardening remain.
 
 ## Completed
 
@@ -18,6 +18,11 @@ The repository has the initial AEM Content Fragment Models, product and category
 - [x] Product grid exists.
 - [x] Category navigation exists.
 - [x] Zustand cart counter exists.
+- [x] AEM-authored site settings, hero, page sections and navigation links exist.
+- [x] AEM feature flags control hero, deals, menu, filters, stores, cart, account, badges and social links.
+- [x] Storefront page order and section visibility authored in AEM.
+- [x] Frontend content boundary extracted to a shared server-side AEM client with per-stream seed fallback.
+- [x] AEM handoff and authoring guide documented (`16_AEM_HANDOFF.md`, `17_AEM_AUTHORING_GUIDE.md`).
 - [x] Project vision documented.
 - [x] System architecture documented.
 - [x] AEM content model roadmap documented.
@@ -39,8 +44,7 @@ The repository has the initial AEM Content Fragment Models, product and category
 - [ ] Create the local Docker Compose development environment.
 - [ ] Define Spring Boot module and service boundaries.
 - [ ] Define PostgreSQL migrations and seed data.
-- [ ] Replace any privileged frontend AEM credential usage with a server-side boundary.
-- [ ] Expand the cart counter into an accessible cart drawer.
+- [ ] Add a drift guard between bundled seed content and live AEM fragments.
 - [ ] Add GraphQL contract tests.
 - [ ] Add frontend typecheck and focused unit-test coverage.
 - [ ] Add backend API contract and integration-test foundation.

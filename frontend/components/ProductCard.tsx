@@ -1,6 +1,8 @@
 "use client";
+
 import Image from "next/image";
 import { Product } from "@/types/product";
+import { SiteSettings } from "@/types/site-content";
 import {
   artForCategory,
   Burger,
@@ -11,6 +13,7 @@ import {
   Breakfast,
 } from "./FoodArt";
 import { useCartStore } from "@/store/cart-store";
+import { formatMoney } from "@/lib/format";
 
 const ART_COMPONENTS = {
   burger: Burger,
@@ -23,12 +26,14 @@ const ART_COMPONENTS = {
 
 export default function ProductCard({
   product,
+  settings,
+  showVegBadge = true,
 }: {
   readonly product: Product;
+  readonly settings: SiteSettings;
+  readonly showVegBadge?: boolean;
 }) {
-  const addToCart = useCartStore(
-    (state) => state.addToCart
-  );
+  const addToCart = useCartStore((state) => state.addToCart);
   const Art = ART_COMPONENTS[artForCategory(product.category)];
 
   return (
@@ -42,7 +47,9 @@ export default function ProductCard({
             sizes="(max-width: 560px) 100vw, (max-width: 800px) 50vw, 33vw"
           />
         ) : (
-          <span className="product-placeholder" aria-hidden="true"><Art /></span>
+          <span className="product-placeholder" aria-hidden="true">
+            <Art />
+          </span>
         )}
       </div>
 
@@ -50,14 +57,18 @@ export default function ProductCard({
         <h2 className="product-title">{product.title}</h2>
 
         <p className="product-description">
-          {product.description || "A delicious choice for your next meal."}
+          {product.description ?? settings.defaultProductDescription}
         </p>
 
         <div className="product-meta">
-          <p className="product-price">₹{product.price}</p>
-          <span className={`diet-badge ${product.isVeg ? "veg" : "non-veg"}`}>
-            {product.isVeg ? "Veg" : "Non-veg"}
-          </span>
+          <p className="product-price">
+            {formatMoney(product.price, settings.locale, settings.currencySymbol)}
+          </p>
+          {showVegBadge && (
+            <span className={`diet-badge ${product.isVeg ? "veg" : "non-veg"}`}>
+              {product.isVeg ? settings.vegLabel : settings.nonVegLabel}
+            </span>
+          )}
         </div>
 
         <button
@@ -65,7 +76,7 @@ export default function ProductCard({
           onClick={() => addToCart(product)}
           className="add-button"
         >
-          Add to order
+          {settings.addToCartLabel}
         </button>
       </div>
     </article>

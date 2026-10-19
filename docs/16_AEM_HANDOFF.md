@@ -1,21 +1,25 @@
 # AEM Architecture Handoff
 
-**Last reviewed:** 2026-10-12
+**Last reviewed:** 2026-10-19
 **Audience:** Anyone taking over the McDelivery AEM content stack and its Next.js consumer.
 
 ## 1. Purpose
 
-This document describes the AEM content foundation that backs the McDelivery
-storefront, how the Next.js frontend consumes it, and what is verified working
-today. It complements the planning set (`01`–`15`) by recording the architecture
-as actually implemented in the repository.
+The storefront is **AEM-first**: every piece of displayed copy, every menu item,
+deal, restaurant, navigation link, page section and feature switch is an AEM
+Content Fragment. The Next.js app contains no authored marketing content — it is
+a rendering layer over the AEM GraphQL API, with a bundled seed fallback used
+only when AEM is unreachable.
+
+This document records the architecture as implemented, the authoring surface,
+the local runbook, and what is verified working.
 
 ## 2. Repository layout
 
 ```
-mcd-aem/     Maven AEM project (content models, sample content, endpoint, configs)
+mcd-aem/     Maven AEM project (CF models, sample content, endpoint, configs)
 frontend/    Next.js 16 App Router storefront (server-side GraphQL consumer)
-docs/        Planning documents 01–15 plus this handoff
+docs/        Planning documents 01–15, this handoff, and the authoring guide
 ```
 
 Maven modules in `mcd-aem/pom.xml`:
@@ -28,55 +32,99 @@ The content foundation lives entirely in **`ui.content`**.
 ### 3.1 Content Fragment models
 
 Repo path `mcd-aem/ui.content/src/main/content/jcr_root/conf/mcd/settings/dam/cfm/models/`,
-deployed to `/conf/mcd/settings/dam/cfm/models`. Four models are defined as
-`sling`-deployed `cq:Template` nodes with scaffolding dialogs:
+deployed to `/conf/mcd/settings/dam/cfm/models`. Nine models are defined as
+`cq:Template` nodes with scaffolding dialogs.
 
-| Model     | Fields |
-|-----------|--------|
-| `product` | title, sku, description, price, currency, category, isVeg, allergens, availability, displayOrder, isActive, image |
-| `category`| title, slug, description, displayOrder, isActive, locale, image |
-| `offer`   | title, offerId, offerType, value, currency, promoCode, description, terms, startAt, endAt, minimumSubtotal, isActive, locale, image |
-| `store`   | storeId, name, address, phone, openingHours, serviceModes, timezone, isActive, temporaryClosure, latitude, longitude, locale |
+**Commerce data**
 
-Each model declares `allowedPaths`/`cq:targetPath` so authored fragments land
-under the intended content tree (for example products → `/content/dam/mcd/products`).
+| Model      | Target path                  | Fields |
+|------------|------------------------------|--------|
+| `product`  | `/content/dam/mcd/products`  | title, sku, description, price, currency, category, isVeg, allergens, availability, displayOrder, isActive, image |
+| `category` | `/content/dam/mcd/categories`| title, slug, description, displayOrder, isActive, locale, image |
+| `offer`    | `/content/dam/mcd/offers`    | title, offerId, offerType, value, currency, promoCode, description, terms, startAt, endAt, minimumSubtotal, isActive, locale, image |
+| `store`    | `/content/dam/mcd/stores`    | storeId, name, address, phone, openingHours, serviceModes, timezone, isActive, temporaryClosure, latitude, longitude, locale |
+
+**Storefront shell (page-level authoring)**
+
+| Model             | Target path                    | Fields |
+|-------------------|--------------------------------|--------|
+| `site-settings`   | `/content/dam/mcd/settings`    | brandName, brandTagline, allItemsLabel, accountLabel, orderCtaLabel/Href, currencySymbol, metaTitle, metaDescription, defaultProductDescription, vegLabel, nonVegLabel, addToCartLabel, cartEyebrow, cartTitle, cartEmptyMessage, cartSubtotalLabel, checkoutLabel, closeLabel, storeBadgeLabel, footerCompanyTitle, footerPolicyTitle, footerToolsTitle, footerSocialTitle, copyright, footerNote, bannerMessage, bannerHint, copyCodeLabel, copiedLabel, saveLabel, itemSingularLabel, itemPluralLabel, perItemLabel, removeLabel, locale, isActive |
+| `hero`            | `/content/dam/mcd/heroes`      | heroId, title, eyebrow, headline, subheadline, description, primaryCtaLabel/Href, secondaryCtaLabel/Href, badgeText, image, variant, displayOrder, isActive |
+| `page-section`    | `/content/dam/mcd/sections`    | sectionKey, eyebrow, heading, emptyMessage, displayOrder, isActive |
+| `navigation-link` | `/content/dam/mcd/navigation`  | label, href, linkGroup, iconKey, displayOrder, externalLink, isActive, isCta |
+| `feature-flag`    | `/content/dam/mcd/features`    | flagKey, label, description, enabled, displayOrder |
+
+Each model declares `allowedPaths`/`cq:targetPath` so authored fragments land in
+the intended content tree.
+
+**Field `required` must be a String.** The sample models write
+`required="on"`, not FileVault's `{Boolean}true` syntax. AEM 2024.8's fragment
+editor (`ElementEditorModelImpl#recreateVirtual`) casts the property to
+`String`, so a stored Boolean breaks every fragment editor page with
+`ClassCastException: Boolean cannot be cast to String`. `"on"` is the value the
+editor normalises to `"true"`. If an instance installed a package built before
+this change, run `python3 mcd-aem/scripts/normalize-cf-required.py` once: vault
+`mode="merge"` does not retype existing properties.
 
 ### 3.2 Sample content
 
-Content Fragments (`dam:Asset` with `contentFragment=true`, `cq:model` pointing
-at the model above) under `/content/dam/mcd`:
+All generated by `mcd-aem/scripts/generate-sample-content.py`.
 
 | Tree | Path | Count |
 |------|------|-------|
+| Site settings | `/content/dam/mcd/settings/global` | **1** |
+| Heroes | `/content/dam/mcd/heroes` | **1** |
+| Page sections | `/content/dam/mcd/sections` | **4** (`hero`, `menu`, `deals`, `locations`) |
+| Navigation links | `/content/dam/mcd/navigation` | **21** (4 header, 6 company, 6 policy, 2 tools, 3 social) |
+| Feature flags | `/content/dam/mcd/features` | **9** |
 | Categories | `/content/dam/mcd/categories` | **6** |
 | Products | `/content/dam/mcd/products` | **24** |
 | Offers | `/content/dam/mcd/offers` | **3** |
 | Stores | `/content/dam/mcd/stores` | **3** |
 
-Example: `/content/dam/mcd/products/aloo-tikki` → title "McAloo Tikki",
-sku `MCD-BUR-001`, price `149`, currency `INR`, category `burgers`, `isVeg=true`.
-
 Category slugs (must stay in sync with frontend seed data):
 `burgers`, `chicken`, `sides`, `beverages`, `desserts`, `breakfast`.
 
-The fragments are generated by `mcd-aem/scripts/generate-sample-content.py`.
-**Keep `frontend/services/seed-menu.ts` in sync with this content** — the seed
-file mirrors it line-for-line and is the fallback when AEM is unreachable.
+Non-ASCII characters in generated `.content.xml` are emitted as numeric XML
+character references (`&#8377;` for ₹). This keeps FileVault imports identical
+across platforms and charsets.
 
-### 3.3 GraphQL endpoint
+The seed mirrors in `frontend/services/seed-menu.ts` and
+`frontend/services/seed-site-content.ts` are **fallback only** — AEM is the
+source of truth. Keep them in sync when sample content changes.
 
-Repo path `ui.content/src/main/content/jcr_root/content/_cq_graphql/mcd/.content.xml`
-defines the persisted endpoint node:
+### 3.3 Feature flags and page composition
+
+Two authoring constructs control behaviour without a code change:
+
+- **`feature-flag` fragments** gate UI features: `hero`, `deals`, `menu`,
+  `menuFilters`, `storeLocator`, `cart`, `account`, `vegBadges`, `footerSocial`.
+  A flag is enabled unless its fragment explicitly says `enabled=false`, so a
+  missing flag never breaks the site.
+- **`page-section` fragments** define which sections render and in what order
+  (`displayOrder`). Unknown section keys are ignored, so authors can stage
+  content for future components without breaking the page.
+
+`page.tsx` maps `sectionKey → component` (`hero`, `menu`, `deals`, `locations`),
+checks the matching feature flag, and renders in the authored order.
+
+### 3.4 GraphQL endpoint
+
+Repo path `ui.content/src/main/content/jcr_root/content/_cq_graphql/mcd/.content.xml`:
 
 - JCR path: `/content/_cq_graphql/mcd/endpoint`
 - `sling:resourceType: graphql/sites/components/endpoint`
-- Public URL form used by the frontend:
-  `http://localhost:5502/content/cq:graphql/mcd/endpoint.json` (POST, JSON body `{ "query": "..." }`)
+- URL: `http://localhost:5502/content/cq:graphql/mcd/endpoint.json`
+  (POST, JSON body `{ "query": "..." }`)
 
-Schema is generated from the CF models, yielding the list queries the frontend
-issues: `productList`, `categoryList`, `offerList`, `storeList`.
+Generated root fields include:
 
-### 3.4 Vault filters
+```
+productList  categoryList  offerList  storeList
+siteSettingsList  heroList  pageSectionList  navigationLinkList  featureFlagList
+```
+
+### 3.5 Vault filters
 
 `mcd-aem/ui.content/src/main/content/META-INF/vault/filter.xml` — all filters use
 `mode="merge"` so the package never overwrites unrelated authored content:
@@ -89,16 +137,16 @@ issues: `productList`, `categoryList`, `offerList`, `storeList`.
 <filter root="/content/cq:graphql"                mode="merge"/>
 ```
 
-### 3.5 Packaging
+### 3.6 Packaging
 
-Verified build for the content package:
+Verified build for the content package (FileVault validation included):
 
 ```bash
-mvn clean install -DskipTests -pl ui.content -am   # exit 0
+cd mcd-aem
+mvn clean install -pl ui.content -DskipTests   # exit 0
 ```
 
-Install the produced ZIP via AEM Package Manager (or `mvn autoInstallPackage`)
-against a local AEM SDK instance (author on `5502` in `.env.local`).
+The package ZIP is `ui.content/target/mcd-aem.ui.content-1.0.0-SNAPSHOT.zip`.
 
 ## 4. Frontend ↔ AEM boundary
 
@@ -113,66 +161,93 @@ AEM_GRAPHQL_USERNAME=admin
 AEM_GRAPHQL_PASSWORD=admin
 ```
 
-Credentials are read **server-side only** (`frontend/services/aem-api.ts` builds
-a Basic-auth header with `Buffer`). Nothing AEM-sensitive is exposed to the
-browser; the only client-visible AEM surface is `app/api/aem-asset/route.ts`,
-which proxies asset binaries.
+Credentials are read **server-side only**. The only client-visible AEM surface
+is `app/api/aem-asset/route.ts`, which proxies asset binaries.
 
 ### 4.2 Read path
 
-`fetchMenuData()` in `frontend/services/aem-api.ts` loads all four streams in
-parallel:
-
 ```
-page.tsx ─▶ fetchMenuData()
-              ├─ getProducts()  → PRODUCT_QUERIES  (3 ordered variants)
-              ├─ getCategories()→ CATEGORY_QUERIES (2 ordered variants)
-              ├─ getOffers()    → OFFER_QUERIES    (2 ordered variants)
-              └─ getStores()    → STORE_QUERIES    (2 ordered variants)
+frontend/services/aem-client.ts    shared transport, timeouts, variants, coercions
+        ▲                 ▲
+aem-api.ts (menu)     site-content.ts (shell)
+        ▲                 ▲
+fetchMenuData()       fetchSiteContent()  ← React cache(), deduped per request
+        └────────┬────────┘
+             app/page.tsx + generateMetadata()
 ```
 
-Design decisions:
-
-- **Ordered query variants** — the CF schema evolves with the authored models,
-  so each stream tries a rich query first and falls back to slimmer shapes; the
-  first variant the endpoint accepts wins (`queryFirstMatch`).
-- **MultiFormatString fields** — multi-line text fields in the CF models
-  (`store.address`, `store.openingHours`, product/offer `description`, `terms`)
-  surface in the schema as `MultiFormatString` and **require a `{ plaintext }`
-  subselection**; single-line fields (`phone`, `serviceModes`, `timezone`) must
-  *not* have one. The store query's first variant matches this shape and
-  `getStores` unwraps results with `asPlainText`.
-- **Per-stream fallback** — each stream has a 6 s timeout (`AbortSignal.timeout`)
-  and falls back to bundled seed content independently. Resulting `source` is
-  `aem` (0 failures), `mixed` (1–3), or `seed` (4), with `degraded: string[]`
-  naming the failed streams.
-- **Graceful degradation UI** — when `source !== "aem"`, `page.tsx` renders
-  `SourceBanner` ("bundled seed content" + Dismiss), so the storefront behaves
-  like the real McDelivery site even with no AEM running.
-- **Category validation** — `page.tsx` whitelists `?category=` against loaded
-  category slugs; unknown/stale slugs fall back to `all` instead of an empty grid.
-- **Filtering** — `MenuBrowser` filters `product.category === selectedCategory`;
-  `CategoryBar` builds `/?category=<slug>` links (and `/` for "All items").
+- **`aem-client.ts`** — one transport for every server-side reader: 6 s timeout,
+  Basic auth from env, GraphQL error surfacing, ordered query variants
+  (`queryFirstMatch`), and `MultiFormatString`/`ImageRef`/number/boolean coercions.
+- **`aem-api.ts`** — products, categories, offers, stores.
+- **`site-content.ts`** — site settings, hero, page sections, navigation, feature
+  flags. Returns `SiteContent` with `source: "aem" | "mixed" | "seed"` and
+  `degraded: string[]`.
+- **Per-stream fallback** — each stream falls back independently to
+  `seed-menu.ts` / `seed-site-content.ts`; the page stays usable while AEM is
+  starting or down.
+- **Metadata** — `generateMetadata()` reads the authored `metaTitle` and
+  `metaDescription`; `fetchSiteContent` is wrapped in React `cache()` so the page
+  and metadata share one AEM read.
 
 ### 4.3 Render boundary
 
 The page is a **server component** (dynamic route, `ƒ /`): GraphQL runs at
-request time on the server with `cache: "no-store"`. Interactive islands
-(`CategoryBar`, `ProductCard`, `CartDrawer`, `Hero`, `DealsStrip`, …) are client
-components receiving serialized props; cart state lives in Zustand.
+request time with `cache: "no-store"`. Interactive islands (`Header`,
+`CategoryBar`, `ProductCard`, `DealsStrip`, `CartDrawer`, `SourceBanner`) are
+client components receiving serialized props; cart state lives in Zustand.
 
-## 5. Local runbook
+Every visible string comes from AEM props:
+
+| Component | Authored inputs |
+|-----------|-----------------|
+| `Header` | brandName, brandTagline, accountLabel, header links, `isCta` |
+| `Hero` | eyebrow, headline, subheadline, description, both CTAs, badgeText, image, variant |
+| `MenuBrowser` | section eyebrow/heading/emptyMessage, allItemsLabel, item singular/plural |
+| `ProductCard` | defaultProductDescription, veg/nonVeg labels, addToCartLabel, currencySymbol, locale |
+| `DealsStrip` | section copy, copyCodeLabel, copiedLabel, saveLabel, currencySymbol, locale |
+| `StoreLocator` | section copy, storeBadgeLabel |
+| `Footer` | brand copy, footerNote, copyright, column titles, all link groups, social icon keys |
+| `CartDrawer` | cartEyebrow, cartTitle, cartEmptyMessage, cartSubtotalLabel, checkoutLabel, closeLabel, perItemLabel, removeLabel, currencySymbol, locale |
+| `SourceBanner` | bannerMessage (`{count}` placeholder), bannerHint, closeLabel |
+
+## 5. Authoring surface
+
+Content authors work in **AEM Assets → Content Fragments**:
+
+| To change | Edit |
+|-----------|------|
+| Brand name/tagline, CTA labels, cart/footer/banner copy, SEO, currency | `settings/global` (Site Settings) |
+| Hero campaign | `heroes/main` |
+| Section heading/eyebrow/empty state and order | `sections/*` (`displayOrder`) |
+| Header/footer links and CTA highlight | `navigation/*` (`linkGroup`, `isCta`) |
+| Hide/launch a feature | `features/*` (`enabled`) |
+| Menu items, prices, diet flags | `products/*` |
+| Categories and their order | `categories/*` |
+| Deals and promo codes | `offers/*` |
+| Restaurants | `stores/*` |
+
+No frontend deployment is needed for any of these — the page re-reads GraphQL on
+each request (`cache: "no-store"`).
+
+See `docs/17_AEM_AUTHORING_GUIDE.md` for the step-by-step author workflow.
+
+## 6. Local runbook
 
 ```bash
-# 1. AEM author (separate terminal)
-aem sdk start            # author at http://localhost:5502
+# 1. AEM author (separate terminal / existing SDK install)
+cd C:/Users/<you>/cloud-sdk/author
+java -Xmx3072m -jar aem-author-p5502.jar
+# author UI: http://localhost:5502/aem/start.html  (admin/admin)
 
-# 2. Build and install the content foundation (models, fragments, endpoint, filters)
-cd mcd-aem && mvn clean install -DskipTests
-curl -u admin:admin -F 'package=@ui.content/target/mcd-aem.ui.content-1.0.0-SNAPSHOT.zip' \
-  -F 'force=true' 'http://localhost:5502/crx/packmgr/service/.json/?cmd=upload'
-curl -u admin:admin -X POST \
-  'http://localhost:5502/crx/packmgr/service/.json/etc/packages/com.mcd/mcd-aem.ui.content-1.0.0-SNAPSHOT.zip?cmd=install'
+# 2. Build and install the content foundation
+cd mcd-aem
+mvn clean install -pl ui.content -DskipTests
+curl -u admin:admin \
+  -F 'file=@ui.content/target/mcd-aem.ui.content-1.0.0-SNAPSHOT.zip' \
+  -F 'name=mcd-aem.ui.content-1.0.0-SNAPSHOT.zip' \
+  -F 'install=true' \
+  'http://localhost:5502/crx/packmgr/service.jsp'
 
 # 3. Frontend
 cd frontend
@@ -180,50 +255,75 @@ npm install
 npm run build && node start-mvp.cjs   # serves http://localhost:4200
 ```
 
-**Merge-mode caveat:** the vault filters use `mode="merge"`, which adds
-content but never overwrites or removes pre-existing nodes. When re-installing
-over an instance that already holds different fragments or CF models under the
-same paths, delete the stale nodes first (HTTP `DELETE` on the JCR path), e.g.
-`curl -u admin:admin -X DELETE http://localhost:5502/content/dam/mcd/products/<name>`.
-Re-installing over an old model tree requires deleting `/conf/mcd` so the
-schema is regenerated from the packaged models.
+**Package Manager API:** use `file=@…` + `install=true` (or `cmd=inst`). The
+older `cmd=upload` / `cmd=install` spellings return the help page with HTTP 200
+and silently do nothing.
+
+**Merge-mode caveat:** `mode="merge"` is deliberate — a deploy must never
+clobber author edits. On this SDK version an install also does **not** add new
+properties/children to nodes that already exist, and it does **not** retype an
+existing property. (The `required` Boolean → String fix is an example: the
+package alone cannot repair an instance installed before it. Run
+`python3 mcd-aem/scripts/normalize-cf-required.py` once instead of deleting the
+models.) When changing the *shape* of a model or the sample fragments in the
+repo, delete the stale subtree once before reinstalling:
+
+```bash
+# model changed → delete model node, reinstall (schema regenerates)
+curl -u admin:admin -X POST -F ':operation=delete' \
+  http://localhost:5502/conf/mcd/settings/dam/cfm/models/site-settings
+
+# sample fragment changed → delete the authored subtree, reinstall
+curl -u admin:admin -X POST -F ':operation=delete' \
+  http://localhost:5502/content/dam/mcd/settings
+```
+
+Never do this against an instance with real authored content: edit in AEM
+instead. Delete only the specific model/fragment subtree, not `/content/dam/mcd`.
 
 With AEM down, the site still runs fully on seed content and shows `SourceBanner`.
 
-## 6. Verified state (2026-10-12)
+## 7. Verified state (2026-10-19)
 
-- **Live AEM mode active**: AEM SDK running on :5502, `ui.content` package
-  installed, legacy demo fragments (`burger`/`drinks`/`fries` categories, old
-  `MC001`/`MC002` products incl. the `Burgger` typo) purged, and `/conf/mcd`
-  models reinstalled so the generated schema includes all fields. The site on
-  :4200 reports `source: "aem"` — no `SourceBanner`, all four streams live.
-- All four rich query variants (products, categories, offers, stores) succeed
-  against the deployed schema; live counts: 6 categories / 24 products /
-  3 offers / 3 stores, identical to seed.
-- Typecheck (`tsc --noEmit`), project-wide ESLint (`npm run lint`, with
-  `*.cjs` launchers scoped out of the TS ruleset), and `npm run build` all exit 0.
-- Production server on **:4200** returns HTTP 200; SSR error (digest 657611650,
-  inline handler on a server component) resolved.
-- Category filter verified end-to-end: `burgers→7, chicken→3, sides→4,
-  beverages→4, desserts→4, breakfast→2, all→24` (sums match); unknown slug
-  `?category=burger` falls back to all 24; active pill marked via
-  `aria-current="true"`/`data-active`.
-- Cart verified: add-to-order increments count, CartDrawer renders qty controls,
-  subtotal and checkout CTA with correct aria labels.
-- Content package: 6/24/3/3 fragments, 4 CF models, endpoint node and merge-mode
-  vault filters present; `mvn … -pl ui.content -am` exit 0.
+- **Live AEM mode active** on :5502 with the content package installed; the site
+  on :4200 reports `source: "aem"` (no `SourceBanner`), all nine streams live.
+- Generated schema exposes `siteSettingsList`, `heroList`, `pageSectionList`,
+  `navigationLinkList`, `featureFlagList` alongside the four commerce roots;
+  rich queries (including `{ plaintext }` fields) succeed.
+- Live render: **24 products, 3 deals, 3 stores, 7 category pills, 24 diet
+  badges**, authored title (`McDelivery | Good food. Good mood.`), authored hero
+  and section headings, footer link groups and legal copy.
+- **Feature flags verified live**: setting `features/deals.enabled=false` removed
+  the deals section; `features/cart.enabled=false` removed the cart button while
+  account stayed; both re-enabled cleanly.
+- **Section composition verified live**: setting `sections/locations.displayOrder=0`
+  moved the store section above the hero in the rendered HTML; restored to 4.
+- **Cart verified** with authored labels: `Ready when you are`, `Your order`,
+  `each`, `Remove`, `Subtotal`, `Continue to checkout`.
+- **Fragment editor verified**: all nine models across 15 representative
+  fragments (settings, hero, sections, navigation, feature flag, product,
+  category, offer, store) return HTTP 200 from
+  `/mnt/overlay/dam/cfm/admin/content/v2/fragment-editor.html/...`; the model
+  editor console and all nine model editor pages return HTTP 200. A save
+  round-trip through `POST .cfm.content.json` (text and Boolean fields) persists
+  to `jcr:content/data/master` and was reverted to the authored values.
+- `tsc --noEmit`, project-wide `npm run lint`, and `npm run build` all exit 0;
+  `mvn -pl ui.content -DskipTests` exits 0 (FileVault validation passes).
+- Production server on :4200 returns HTTP 200 after a clean rebuild; `/menu`
+  anchor fixed on the menu section.
 
-## 7. Known gaps / next steps
+## 8. Known gaps / next steps
 
-1. **Seed drift guard** — the AEM instance is now the source of truth; if the
-   SDK stops, the site falls back to `seed-menu.ts`. Add a contract test that
-   diffs seed content against the GraphQL endpoint so the two cannot drift.
-2. **Contract tests** — add GraphQL contract tests asserting the seed data
-   satisfies the same shape the AEM queries produce (guards drift between
-   `seed-menu.ts` and authored fragments).
-3. **Asset pipeline** — product/category `image` fields exist in the models but
-   seed content ships inline SVG art; wire `app/api/aem-asset` to real DAM renditions.
-4. **Transactional backend** — cart/checkout still client-side; Spring Boot REST
-   APIs + PostgreSQL (per `05_BACKEND_ROADMAP.md`, `06_DATABASE_DESIGN.md`) remain.
-5. **Persisted queries** — switch to AEM persisted GraphQL queries for caching
-   once the schema stabilizes.
+1. **WYSIWYG page editing** — authors currently edit Content Fragments, not an
+   AEM Sites page. If visual page building is required, add a Universal Editor or
+   AEM Sites HTL rendering path; the current architecture is deliberately headless.
+2. **Localisation** — `locale` fields exist, but there is one fragment set and no
+   language routing. Add locale-specific fragment trees and a locale selector.
+3. **Seed drift guard** — add a contract test that diffs `seed-menu.ts` and
+   `seed-site-content.ts` against the GraphQL endpoint.
+4. **Asset pipeline** — product/category/hero `image` fields exist; seed content
+   ships inline SVG art. Wire `app/api/aem-asset` to real DAM renditions.
+5. **Persisted queries** — switch to AEM persisted GraphQL queries for CDN
+   caching once the schema stabilises.
+6. **Transactional backend** — cart/checkout remains client-side; Spring Boot
+   REST APIs + PostgreSQL (docs `05`/`06`) are still pending.

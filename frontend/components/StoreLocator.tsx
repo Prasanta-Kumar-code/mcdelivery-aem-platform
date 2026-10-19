@@ -1,9 +1,14 @@
+import { PageSection, SiteSettings } from "@/types/site-content";
 import { Store } from "@/types/store";
 
 export default function StoreLocator({
   stores,
+  section,
+  settings,
 }: {
-  stores: Store[];
+  readonly stores: Store[];
+  readonly section: PageSection;
+  readonly settings: SiteSettings;
 }) {
   const active = stores.filter((store) => store.isActive !== false);
 
@@ -11,12 +16,14 @@ export default function StoreLocator({
     <section className="stores" id="locations" aria-labelledby="locations-heading">
       <div className="stores__inner">
         <div className="stores__title-row">
-          <p className="eyebrow">Near by you</p>
-          <h2 id="locations-heading">Find your nearest McDelivery</h2>
+          {section.eyebrow && <p className="eyebrow">{section.eyebrow}</p>}
+          <h2 id="locations-heading">{section.heading}</h2>
         </div>
 
         {active.length === 0 ? (
-          <p className="stores__empty">No active stores right now.</p>
+          <p className="stores__empty">
+            {section.emptyMessage ?? "No active stores right now."}
+          </p>
         ) : (
           <div className="stores__cards">
             {active.map((store) => (
@@ -36,8 +43,8 @@ export default function StoreLocator({
                     ))}
                   </p>
                 )}
-                {!store.temporaryClosure && (
-                  <span className="store__badge">Accepts delivery orders</span>
+                {!store.temporaryClosure && settings.storeBadgeLabel && (
+                  <span className="store__badge">{settings.storeBadgeLabel}</span>
                 )}
               </article>
             ))}

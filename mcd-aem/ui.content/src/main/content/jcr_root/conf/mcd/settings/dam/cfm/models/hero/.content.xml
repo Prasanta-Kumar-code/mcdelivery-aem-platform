@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" xmlns:granite="http://www.adobe.com/jcr/granite/1.0"
+    jcr:primaryType="cq:Template"
+    allowedPaths="[/content/dam/mcd/heroes(/.*)?]"
+    ranking="{Long}100">
+    <jcr:content
+        cq:scaffolding="/conf/mcd/settings/dam/cfm/models/hero/jcr:content/model"
+        cq:templateType="/libs/settings/dam/cfm/model-types/fragment"
+        jcr:primaryType="cq:PageContent"
+        jcr:title="Hero"
+        sling:resourceSuperType="dam/cfm/models/console/components/data/entity"
+        sling:resourceType="dam/cfm/models/console/components/data/entity/default">
+        <model
+            cq:targetPath="/content/dam/mcd/heroes"
+            jcr:primaryType="cq:PageContent"
+            sling:resourceType="wcm/scaffolding/components/scaffolding"
+            dataTypesConfig="/mnt/overlay/settings/dam/cfm/models/formbuilderconfig/datatypes"
+            maxGeneratedOrder="50">
+            <cq:dialog
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="cq/gui/components/authoring/dialog">
+                <content
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="granite/ui/components/coral/foundation/fixedcolumns">
+                    <items
+                        jcr:primaryType="nt:unstructured"
+                        maxGeneratedOrder="50">
+                        <heroId
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+        cfm-element="Hero ID"
+        fieldLabel="Hero ID"
+        listOrder="1"
+        metaType="text-single"
+        name="heroId"
+        renderReadOnly="false"
+        showEmptyInReadOnly="true"
+        valueType="string"
+        required="on"/>
+                        <title
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+        cfm-element="Internal title"
+        fieldLabel="Internal title"
+        listOrder="2"
+        metaType="text-single"
+        name="title"
+        renderReadOnly="false"
+        showEmptyInReadOnly="true"
+        valueType="string"
+        required="on"
+        maxlength="120"/>
+                        <eyebrow
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+        cfm-element="Eyebrow"
+        fieldLabel="Eyebrow"
+        listOrder="3"
+        metaType="text-single"
+        name="eyebrow"
+        renderReadOnly="false"
+        showEmptyInReadOnly="true"
+        valueType="string"
+        maxlength="80"/>
+                        <headline
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+        cfm-element="Headline"
+        fieldLabel="Headline"
+        listOrder="4"
+        metaType="text-single"
+        name="headline"
+        renderReadOnly="false"
+        showEmptyInReadOnly="true"
+        valueType="string"
+        required="on"
+        maxlength="120"/>
+                        <subheadline
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+        cfm-element="Sub-headline"
+        fieldLabel="Sub-headline"
+        listOrder="5"
+        metaType="text-single"
+        name="subheadline"
+        renderReadOnly="false"
+        showEmptyInReadOnly="true"
+        valueType="string"
+        maxlength="120"/>
+                        <description
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="dam/cfm/admin/components/authoring/contenteditor/multieditor"
+        cfm-element="Description"
+        fieldLabel="Description"
+        listOrder="6"
+        metaType="text-multi"
+        name="description"
+        renderReadOnly="false"
+        showEmptyInReadOnly="true"
+        valueType="string"/>
+                        <primaryCtaLabel
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+        cfm-element="Primary CTA label"
+        fieldLabel="Primary CTA label"
+        listOrder="7"
+        metaType="text-single"
+        name="primaryCtaLabel"
+        renderReadOnly="false"
+        showEmptyInReadOnly="true"
+        valueType="string"
+        maxlength="60"/>
+                        <primaryCtaHref
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+        cfm-element="Primary CTA link"
+        fieldLabel="Primary CTA link"
+        listOrder="8"
+        metaType="text-single"
+        name="primaryCtaHref"
+        renderReadOnly="false"
+        showEmptyInReadOnly="true"
+        valueType="string"
+        maxlength="200"/>
+                        <secondaryCtaLabel
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+        cfm-element="Secondary CTA label"
+        fieldLabel="Secondary CTA label"
+        listOrder="9"
+        metaType="text-single"
+        name="secondaryCtaLabel"
+        renderReadOnly="false"
+        showEmptyInReadOnly="true"
+        valueType="string"
+        maxlength="60"/>
+                        <secondaryCtaHref
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+        cfm-element="Secondary CTA link"
+        fieldLabel="Secondary CTA link"
+        listOrder="10"
+        metaType="text-single"
+        name="secondaryCtaHref"
+        renderReadOnly="false"
+        showEmptyInReadOnly="true"
+        valueType="string"
+        maxlength="200"/>
+                        <badgeText
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+        cfm-element="Promo badge"
+        fieldLabel="Promo badge"
+        listOrder="11"
+        metaType="text-single"
+        name="badgeText"
+        renderReadOnly="false"
+        showEmptyInReadOnly="true"
+        valueType="string"
+        maxlength="80"/>
+                        <image
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="dam/cfm/models/editor/components/contentreference"
+        cfm-element="Hero image"
+        fieldLabel="Hero image"
+        listOrder="12"
+        metaType="reference"
+        name="image"
+        renderReadOnly="false"
+        showEmptyInReadOnly="true"
+        valueType="string"
+        rootPath="/content/dam/mcd"/>
+                        <variant
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+        cfm-element="Variant"
+        fieldLabel="Variant"
+        listOrder="13"
+        metaType="text-single"
+        name="variant"
+        renderReadOnly="false"
+        showEmptyInReadOnly="true"
+        valueType="string"
+        emptyText="campaign | deal"/>
+                        <displayOrder
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/coral/foundation/form/numberfield"
+        cfm-element="Display order"
+        fieldLabel="Display order"
+        listOrder="14"
+        metaType="number"
+        name="displayOrder"
+        renderReadOnly="false"
+        showEmptyInReadOnly="true"
+        valueType="long"
+        typeHint="long"/>
+                        <isActive
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/coral/foundation/form/checkbox"
+        cfm-element="Active"
+        fieldLabel="Active"
+        listOrder="15"
+        metaType="boolean"
+        name="isActive"
+        renderReadOnly="false"
+        showEmptyInReadOnly="true"
+        valueType="boolean"
+        text="Render this hero"/>
+                    </items>
+                </content>
+            </cq:dialog>
+        </model>
+    </jcr:content>
+</jcr:root>

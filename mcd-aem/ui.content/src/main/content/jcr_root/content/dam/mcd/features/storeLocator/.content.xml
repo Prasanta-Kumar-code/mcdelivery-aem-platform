@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:dam="http://www.day.com/dam/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0"
+    jcr:primaryType="dam:Asset">
+    <jcr:content
+        jcr:primaryType="dam:AssetContent"
+        jcr:title="Store locator"
+        jcr:description="Show the restaurant cards and service modes."
+        contentFragment="{Boolean}true">
+        <metadata
+            jcr:primaryType="nt:unstructured"
+            cq:tags="[]"/>
+        <data
+            jcr:primaryType="nt:unstructured"
+            cq:model="/conf/mcd/settings/dam/cfm/models/feature-flag">
+            <master
+                jcr:primaryType="nt:unstructured"
+            flagKey="storeLocator"
+            label="Store locator"
+            description="Show the restaurant cards and service modes."
+            enabled="{Boolean}true"
+            displayOrder="{Long}5"/>
+        </data>
+    </jcr:content>
+</jcr:root>

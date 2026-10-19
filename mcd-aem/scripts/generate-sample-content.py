@@ -33,8 +33,26 @@ DATEPICKER = "granite/ui/components/coral/foundation/form/datepicker"
 CONTENT_REF = "dam/cfm/models/editor/components/contentreference"
 
 
+def xml_value(value) -> str:
+    """Escape an XML attribute value.
+
+    Non-ASCII characters are emitted as numeric character references: AEM's
+    FileVault importer reads .content.xml with the platform charset, so a raw
+    rupee sign or em dash would otherwise be stored as mojibake.
+    """
+    text = escape(str(value), {'"': "&quot;"})
+    return "".join(ch if ord(ch) < 128 else f"&#{ord(ch)};" for ch in text)
+
+
 def field(order, name, label, meta, value, resource, **extra):
-    """One dialog item == one GraphQL element of the content fragment model."""
+    """One dialog item == one GraphQL element of the content fragment model.
+
+    ``required`` is deliberately written as the string ``"on"``. AEM 2024.8's
+    fragment editor casts the stored property to String; FileVault's
+    ``{Boolean}true`` form is stored as a Boolean and makes the editor fail
+    with ``ClassCastException: Boolean cannot be cast to String``. The editor
+    normalises ``"on"`` back to ``"true"`` when it renders the field.
+    """
     props = {
         "jcr:primaryType": "nt:unstructured",
         "sling:resourceType": resource,
@@ -48,7 +66,7 @@ def field(order, name, label, meta, value, resource, **extra):
         "valueType": value,
     }
     props.update(extra)
-    attrs = "\n".join(f'        {k}="{escape(str(v), {chr(34): "&quot;"})}"' for k, v in props.items())
+    attrs = "\n".join(f'        {k}="{xml_value(v)}"' for k, v in props.items())
     return f"                        <{name}\n{attrs}/>"
 
 
@@ -74,7 +92,7 @@ def model_xml(slug, title, target_path, fields):
         cq:scaffolding="{CONF}/{slug}/jcr:content/model"
         cq:templateType="/libs/settings/dam/cfm/model-types/fragment"
         jcr:primaryType="cq:PageContent"
-        jcr:title="{escape(title)}"
+        jcr:title="{xml_value(title)}"
         sling:resourceSuperType="dam/cfm/models/console/components/data/entity"
         sling:resourceType="dam/cfm/models/console/components/data/entity/default">
         <model
@@ -103,11 +121,96 @@ def model_xml(slug, title, target_path, fields):
 
 
 MODELS = {
-    "product": ("Product", f"{DAM}/products", [
-        field(1, "title", "Title", "text-single", "string", TEXT, required="{Boolean}true", maxlength="160"),
-        field(2, "sku", "SKU", "text-single", "string", TEXT, required="{Boolean}true", maxlength="64"),
+    "site-settings": ("Site Settings", f"{DAM}/settings", [
+        field(1, "brandName", "Brand name", "text-single", "string", TEXT, required="on", maxlength="80"),
+        field(2, "brandTagline", "Brand tagline", "text-single", "string", TEXT, maxlength="120"),
+        field(3, "allItemsLabel", "All items label", "text-single", "string", TEXT, maxlength="60"),
+        field(4, "accountLabel", "Account label", "text-single", "string", TEXT, maxlength="60"),
+        field(5, "orderCtaLabel", "Order CTA label", "text-single", "string", TEXT, maxlength="60"),
+        field(6, "orderCtaHref", "Order CTA link", "text-single", "string", TEXT, maxlength="200"),
+        field(7, "currencySymbol", "Currency symbol", "text-single", "string", TEXT, maxlength="8"),
+        field(8, "metaTitle", "Page title (SEO)", "text-single", "string", TEXT, maxlength="160"),
+        field(9, "metaDescription", "Page description (SEO)", "text-multi", "string", MULTI),
+        field(10, "defaultProductDescription", "Default product description", "text-single", "string", TEXT, maxlength="200"),
+        field(11, "vegLabel", "Vegetarian badge", "text-single", "string", TEXT, maxlength="40"),
+        field(12, "nonVegLabel", "Non-vegetarian badge", "text-single", "string", TEXT, maxlength="40"),
+        field(13, "addToCartLabel", "Add to cart label", "text-single", "string", TEXT, maxlength="60"),
+        field(14, "cartEyebrow", "Cart eyebrow", "text-single", "string", TEXT, maxlength="60"),
+        field(15, "cartTitle", "Cart title", "text-single", "string", TEXT, maxlength="80"),
+        field(16, "cartEmptyMessage", "Empty cart message", "text-single", "string", TEXT, maxlength="160"),
+        field(17, "cartSubtotalLabel", "Subtotal label", "text-single", "string", TEXT, maxlength="40"),
+        field(18, "checkoutLabel", "Checkout label", "text-single", "string", TEXT, maxlength="60"),
+        field(19, "closeLabel", "Close label", "text-single", "string", TEXT, maxlength="40"),
+        field(20, "storeBadgeLabel", "Store badge label", "text-single", "string", TEXT, maxlength="80"),
+        field(21, "footerCompanyTitle", "Footer column: company", "text-single", "string", TEXT, maxlength="40"),
+        field(22, "footerPolicyTitle", "Footer column: policy", "text-single", "string", TEXT, maxlength="40"),
+        field(23, "footerToolsTitle", "Footer column: tools", "text-single", "string", TEXT, maxlength="40"),
+        field(24, "footerSocialTitle", "Footer column: social", "text-single", "string", TEXT, maxlength="40"),
+        field(25, "copyright", "Copyright line", "text-single", "string", TEXT, maxlength="200"),
+        field(26, "footerNote", "Footer note", "text-multi", "string", MULTI),
+        field(27, "bannerHint", "Fallback banner hint", "text-multi", "string", MULTI),
+        field(28, "locale", "Locale (BCP 47)", "text-single", "string", TEXT),
+        field(29, "isActive", "Active", "boolean", "boolean", CHECKBOX, text="Publish this site configuration"),
+        field(30, "bannerMessage", "Fallback banner message", "text-single", "string", TEXT, maxlength="200"),
+        field(31, "copyCodeLabel", "Copy code label", "text-single", "string", TEXT, maxlength="40"),
+        field(32, "copiedLabel", "Copied label", "text-single", "string", TEXT, maxlength="40"),
+        field(33, "saveLabel", "Save label", "text-single", "string", TEXT, maxlength="40"),
+        field(34, "itemSingularLabel", "Item count (singular)", "text-single", "string", TEXT, maxlength="40"),
+        field(35, "itemPluralLabel", "Item count (plural)", "text-single", "string", TEXT, maxlength="40"),
+        field(36, "perItemLabel", "Per item label", "text-single", "string", TEXT, maxlength="40"),
+        field(37, "removeLabel", "Remove label", "text-single", "string", TEXT, maxlength="40"),
+    ]),
+    "hero": ("Hero", f"{DAM}/heroes", [
+        field(1, "heroId", "Hero ID", "text-single", "string", TEXT, required="on"),
+        field(2, "title", "Internal title", "text-single", "string", TEXT, required="on", maxlength="120"),
+        field(3, "eyebrow", "Eyebrow", "text-single", "string", TEXT, maxlength="80"),
+        field(4, "headline", "Headline", "text-single", "string", TEXT, required="on", maxlength="120"),
+        field(5, "subheadline", "Sub-headline", "text-single", "string", TEXT, maxlength="120"),
+        field(6, "description", "Description", "text-multi", "string", MULTI),
+        field(7, "primaryCtaLabel", "Primary CTA label", "text-single", "string", TEXT, maxlength="60"),
+        field(8, "primaryCtaHref", "Primary CTA link", "text-single", "string", TEXT, maxlength="200"),
+        field(9, "secondaryCtaLabel", "Secondary CTA label", "text-single", "string", TEXT, maxlength="60"),
+        field(10, "secondaryCtaHref", "Secondary CTA link", "text-single", "string", TEXT, maxlength="200"),
+        field(11, "badgeText", "Promo badge", "text-single", "string", TEXT, maxlength="80"),
+        field(12, "image", "Hero image", "reference", "string", CONTENT_REF, rootPath=DAM),
+        field(13, "variant", "Variant", "text-single", "string", TEXT, emptyText="campaign | deal"),
+        field(14, "displayOrder", "Display order", "number", "long", NUMBER, typeHint="long"),
+        field(15, "isActive", "Active", "boolean", "boolean", CHECKBOX, text="Render this hero"),
+    ]),
+    "page-section": ("Page Section", f"{DAM}/sections", [
+        field(1, "sectionKey", "Section key", "text-single", "string", TEXT, required="on",
+              emptyText="hero | deals | menu | locations"),
+        field(2, "eyebrow", "Eyebrow", "text-single", "string", TEXT, maxlength="80"),
+        field(3, "heading", "Heading", "text-single", "string", TEXT, required="on", maxlength="120"),
+        field(4, "emptyMessage", "Empty state message", "text-single", "string", TEXT, maxlength="200"),
+        field(5, "displayOrder", "Display order", "number", "long", NUMBER, required="on", typeHint="long"),
+        field(6, "isActive", "Active", "boolean", "boolean", CHECKBOX, text="Render this section"),
+    ]),
+    "navigation-link": ("Navigation Link", f"{DAM}/navigation", [
+        field(1, "label", "Label", "text-single", "string", TEXT, required="on", maxlength="60"),
+        field(2, "href", "Link", "text-single", "string", TEXT, required="on", maxlength="300"),
+        field(3, "linkGroup", "Link group", "text-single", "string", TEXT, required="on",
+              emptyText="header | footer-company | footer-policy | footer-tools | footer-social"),
+        field(4, "iconKey", "Icon key", "text-single", "string", TEXT, maxlength="40",
+              emptyText="facebook | twitter | instagram"),
+        field(5, "displayOrder", "Display order", "number", "long", NUMBER, typeHint="long"),
+        field(6, "externalLink", "Opens in a new tab", "boolean", "boolean", CHECKBOX, text="Open in a new tab"),
+        field(7, "isActive", "Active", "boolean", "boolean", CHECKBOX, text="Show this link"),
+        field(8, "isCta", "Call to action", "boolean", "boolean", CHECKBOX, text="Highlight as a call to action"),
+    ]),
+    "feature-flag": ("Feature Flag", f"{DAM}/features", [
+        field(1, "flagKey", "Flag key", "text-single", "string", TEXT, required="on",
+              emptyText="deals | storeLocator | cart | account"),
+        field(2, "label", "Label", "text-single", "string", TEXT, maxlength="80"),
         field(3, "description", "Description", "text-multi", "string", MULTI),
-        field(4, "price", "Price", "number", "long", NUMBER, required="{Boolean}true", typeHint="long"),
+        field(4, "enabled", "Enabled", "boolean", "boolean", CHECKBOX, text="Enable this feature"),
+        field(5, "displayOrder", "Display order", "number", "long", NUMBER, typeHint="long"),
+    ]),
+    "product": ("Product", f"{DAM}/products", [
+        field(1, "title", "Title", "text-single", "string", TEXT, required="on", maxlength="160"),
+        field(2, "sku", "SKU", "text-single", "string", TEXT, required="on", maxlength="64"),
+        field(3, "description", "Description", "text-multi", "string", MULTI),
+        field(4, "price", "Price", "number", "long", NUMBER, required="on", typeHint="long"),
         field(5, "currency", "Currency (ISO 4217)", "text-single", "string", TEXT, maxlength="3"),
         field(6, "category", "Category slug", "text-single", "string", TEXT),
         field(7, "isVeg", "Vegetarian", "boolean", "boolean", CHECKBOX, text="Vegetarian item"),
@@ -119,17 +222,17 @@ MODELS = {
         field(12, "image", "Product image", "reference", "string", CONTENT_REF, rootPath=DAM),
     ]),
     "category": ("Category", f"{DAM}/categories", [
-        field(1, "title", "Title", "text-single", "string", TEXT, required="{Boolean}true", maxlength="80"),
-        field(2, "slug", "Slug", "text-single", "string", TEXT, required="{Boolean}true"),
+        field(1, "title", "Title", "text-single", "string", TEXT, required="on", maxlength="80"),
+        field(2, "slug", "Slug", "text-single", "string", TEXT, required="on"),
         field(3, "description", "Description", "text-multi", "string", MULTI),
         field(4, "image", "Category image", "reference", "string", CONTENT_REF, rootPath=DAM),
-        field(5, "displayOrder", "Display order", "number", "long", NUMBER, required="{Boolean}true", typeHint="long"),
+        field(5, "displayOrder", "Display order", "number", "long", NUMBER, required="on", typeHint="long"),
         field(6, "isActive", "Active", "boolean", "boolean", CHECKBOX, text="Discoverable on the website"),
-        field(7, "locale", "Locale (BCP 47)", "text-single", "string", TEXT, required="{Boolean}true"),
+        field(7, "locale", "Locale (BCP 47)", "text-single", "string", TEXT, required="on"),
     ]),
     "offer": ("Offer", f"{DAM}/offers", [
-        field(1, "offerId", "Offer ID", "text-single", "string", TEXT, required="{Boolean}true"),
-        field(2, "title", "Title", "text-single", "string", TEXT, required="{Boolean}true"),
+        field(1, "offerId", "Offer ID", "text-single", "string", TEXT, required="on"),
+        field(2, "title", "Title", "text-single", "string", TEXT, required="on"),
         field(3, "description", "Description", "text-multi", "string", MULTI),
         field(4, "offerType", "Offer type", "text-single", "string", TEXT,
              emptyText="FIXED_DISCOUNT | PERCENT_DISCOUNT | BOGO | FREE_DELIVERY"),
@@ -147,8 +250,8 @@ MODELS = {
         field(14, "locale", "Locale (BCP 47)", "text-single", "string", TEXT),
     ]),
     "store": ("Store", f"{DAM}/stores", [
-        field(1, "storeId", "Store ID", "text-single", "string", TEXT, required="{Boolean}true"),
-        field(2, "name", "Name", "text-single", "string", TEXT, required="{Boolean}true"),
+        field(1, "storeId", "Store ID", "text-single", "string", TEXT, required="on"),
+        field(2, "name", "Name", "text-single", "string", TEXT, required="on"),
         field(3, "address", "Address", "text-multi", "string", MULTI),
         field(4, "latitude", "Latitude", "text-single", "string", TEXT),
         field(5, "longitude", "Longitude", "text-single", "string", TEXT),
@@ -174,15 +277,15 @@ def write(path: Path, content: str) -> None:
 
 def fragment_xml(model, title, description, values):
     props = "\n".join(
-        f'            {k}="{escape(str(v), {chr(34): "&quot;"})}"' for k, v in values.items()
+        f'            {k}="{xml_value(v)}"' for k, v in values.items()
     )
     return f"""<?xml version="1.0" encoding="UTF-8"?>
 <jcr:root xmlns:dam="http://www.day.com/dam/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0"
     jcr:primaryType="dam:Asset">
     <jcr:content
         jcr:primaryType="dam:AssetContent"
-        jcr:title="{escape(title)}"
-        jcr:description="{escape(description)}"
+        jcr:title="{xml_value(title)}"
+        jcr:description="{xml_value(description)}"
         contentFragment="{{Boolean}}true">
         <metadata
             jcr:primaryType="nt:unstructured"
@@ -275,6 +378,112 @@ OFFERS = [
      "2026-01-01T00:00:00.000Z", "2026-12-31T23:59:59.000Z"),
 ]
 
+SITE_SETTINGS = {
+    "brandName": "McDelivery",
+    "brandTagline": "Hot & fresh, right away",
+    "allItemsLabel": "All items",
+    "accountLabel": "Sign in",
+    "orderCtaLabel": "Order now",
+    "orderCtaHref": "#menu",
+    "currencySymbol": "₹",
+    "metaTitle": "McDelivery | Good food. Good mood.",
+    "metaDescription": "Browse the full McDelivery menu, unlock today's deals and find the restaurant nearest to you.",
+    "defaultProductDescription": "A delicious choice for your next meal.",
+    "vegLabel": "Veg",
+    "nonVegLabel": "Non-veg",
+    "addToCartLabel": "Add to order",
+    "cartEyebrow": "Ready when you are",
+    "cartTitle": "Your order",
+    "cartEmptyMessage": "Your cart is empty.",
+    "cartSubtotalLabel": "Subtotal",
+    "checkoutLabel": "Continue to checkout",
+    "closeLabel": "Close",
+    "storeBadgeLabel": "Accepts delivery orders",
+    "footerCompanyTitle": "Link",
+    "footerPolicyTitle": "Policy",
+    "footerToolsTitle": "Tools",
+    "footerSocialTitle": "Follow us",
+    "copyright": "© 2026 McDelivery. A learning project — not affiliated with McDonald's.",
+    "footerNote": "Learning project — built with AEM, Next.js, Spring Boot and PostgreSQL.",
+    "bannerMessage": "Showing bundled seed content because {count} content source(s) could not be reached",
+    "bannerHint": "Start the AEM SDK and install the mcd content package to load the authored experience instead.",
+    "copyCodeLabel": "Copy code",
+    "copiedLabel": "Copied",
+    "saveLabel": "Save",
+    "itemSingularLabel": "item",
+    "itemPluralLabel": "items",
+    "perItemLabel": "each",
+    "removeLabel": "Remove",
+    "locale": "en-IN",
+    "isActive": "{Boolean}true",
+}
+
+HEROES = [
+    ("main", "Home hero", "Made for your moment", "Good food. Good mood.", "",
+     "Freshly grilled, made to order. Browse the menu, build your favourite meal and get it delivered hot.",
+     "Order now", "#menu", "See the deals", "#deals", "Free delivery over ₹499",
+     "campaign", 1),
+]
+
+SECTIONS = [
+    # key, eyebrow, heading, order
+    ("hero", "", "", 1),
+    ("menu", "Made for your moment", "Explore the menu", 2),
+    ("deals", "Today's specials", "Deals that hit the spot", 3),
+    ("locations", "Near by you", "Find your nearest McDelivery", 4),
+]
+
+EMPTY_MESSAGES = {
+    "menu": "No products are available in this category.",
+    "deals": "No active offers right now. Check back soon.",
+    "locations": "No active stores right now.",
+}
+
+NAVIGATION = [
+    # slug, label, href, group, icon, order
+    ("header-menu", "Menu", "#menu", "header", "", 1),
+    ("header-deals", "Deals", "#deals", "header", "", 2),
+    ("header-locations", "Locations", "#locations", "header", "", 3),
+    ("header-order", "Order Now", "#menu", "header", "", 4),
+]
+
+CTA_LINKS = {"header-order"}
+
+NAVIGATION_TAIL = [
+    ("footer-company-contact", "Contact Us", "#", "footer-company", "", 1),
+    ("footer-company-careers", "Careers", "#", "footer-company", "", 2),
+    ("footer-company-history", "Our History", "#", "footer-company", "", 3),
+    ("footer-company-newsroom", "Newsroom", "#", "footer-company", "", 4),
+    ("footer-company-suppliers", "Our Suppliers", "#", "footer-company", "", 5),
+    ("footer-company-sustainability", "Sustainability", "#", "footer-company", "", 6),
+    ("footer-policy-terms", "Terms & Conditions", "#", "footer-policy", "", 1),
+    ("footer-policy-privacy", "Privacy Policy", "#", "footer-policy", "", 2),
+    ("footer-policy-accessibility", "Accessibility", "#", "footer-policy", "", 3),
+    ("footer-policy-privacy-choices", "Your Privacy Choices", "#", "footer-policy", "", 4),
+    ("footer-policy-ca-privacy", "CA Privacy Rights", "#", "footer-policy", "", 5),
+    ("footer-policy-interest-ads", "Interest-Based Ads", "#", "footer-policy", "", 6),
+    ("footer-tools-app-store", "Download on the App Store", "#", "footer-tools", "", 1),
+    ("footer-tools-google-play", "Get it on Google Play", "#", "footer-tools", "", 2),
+    ("footer-social-facebook", "Facebook", "#", "footer-social", "facebook", 1),
+    ("footer-social-twitter", "Twitter", "#", "footer-social", "twitter", 2),
+    ("footer-social-instagram", "Instagram", "#", "footer-social", "instagram", 3),
+]
+
+NAVIGATION += NAVIGATION_TAIL
+
+FEATURE_FLAGS = [
+    # flag, label, description, enabled, order
+    ("hero", "Hero banner", "Show the campaign hero at the top of the page.", "true", 1),
+    ("deals", "Deals strip", "Show the active offers and promo codes.", "true", 2),
+    ("menu", "Menu browser", "Show the product grid and category filters.", "true", 3),
+    ("menuFilters", "Category filters", "Show the category pill navigation above the menu.", "true", 4),
+    ("storeLocator", "Store locator", "Show the restaurant cards and service modes.", "true", 5),
+    ("cart", "Cart drawer", "Allow customers to add products and open the cart.", "true", 6),
+    ("account", "Account entry point", "Show the sign-in entry point in the header.", "true", 7),
+    ("vegBadges", "Diet badges", "Show the vegetarian and non-vegetarian badges on product cards.", "true", 8),
+    ("footerSocial", "Footer social links", "Show the social media icons in the footer.", "true", 9),
+]
+
 STORES = [
     ("mcd-001", "McDelivery MG Road", "MG Road, Central Market, Bengaluru, Karnataka 560001",
      "12.9756", "77.6060", "+91 80 4000 1000",
@@ -340,6 +549,71 @@ def main() -> None:
                   "locale": "en-IN",
               }))
 
+    write(JCR_ROOT / "content/dam/mcd/settings/global/.content.xml",
+          fragment_xml("site-settings", "Global site settings",
+                       "Brand, copy, labels and SEO defaults for the storefront.", SITE_SETTINGS))
+
+    for slug, title, eyebrow, headline, subheadline, description, primary_label, primary_href, \
+            secondary_label, secondary_href, badge, variant, order in HEROES:
+        values = {
+            "heroId": slug,
+            "title": title,
+            "eyebrow": eyebrow,
+            "headline": headline,
+            "description": description,
+            "primaryCtaLabel": primary_label,
+            "primaryCtaHref": primary_href,
+            "secondaryCtaLabel": secondary_label,
+            "secondaryCtaHref": secondary_href,
+            "badgeText": badge,
+            "variant": variant,
+            "displayOrder": "{Long}%d" % order,
+            "isActive": "{Boolean}true",
+        }
+        if subheadline:
+            values["subheadline"] = subheadline
+        write(JCR_ROOT / f"content/dam/mcd/heroes/{slug}/.content.xml",
+              fragment_xml("hero", title, headline, values))
+
+    for key, eyebrow, heading, order in SECTIONS:
+        values = {
+            "sectionKey": key,
+            "heading": heading or key.title(),
+            "displayOrder": "{Long}%d" % order,
+            "isActive": "{Boolean}true",
+        }
+        if eyebrow:
+            values["eyebrow"] = eyebrow
+        if key in EMPTY_MESSAGES:
+            values["emptyMessage"] = EMPTY_MESSAGES[key]
+        write(JCR_ROOT / f"content/dam/mcd/sections/{key}/.content.xml",
+              fragment_xml("page-section", heading or key.title(), eyebrow or heading, values))
+
+    for slug, label, href, group, icon, order in NAVIGATION:
+        values = {
+            "label": label,
+            "href": href,
+            "linkGroup": group,
+            "displayOrder": "{Long}%d" % order,
+            "externalLink": "{Boolean}false",
+            "isActive": "{Boolean}true",
+            "isCta": "{Boolean}%s" % ("true" if slug in CTA_LINKS else "false"),
+        }
+        if icon:
+            values["iconKey"] = icon
+        write(JCR_ROOT / f"content/dam/mcd/navigation/{slug}/.content.xml",
+              fragment_xml("navigation-link", label, href, values))
+
+    for flag, label, description, enabled, order in FEATURE_FLAGS:
+        write(JCR_ROOT / f"content/dam/mcd/features/{flag}/.content.xml",
+              fragment_xml("feature-flag", label, description, {
+                  "flagKey": flag,
+                  "label": label,
+                  "description": description,
+                  "enabled": "{Boolean}%s" % enabled,
+                  "displayOrder": "{Long}%d" % order,
+              }))
+
     for store_id, name, address, lat, lon, phone, hours, modes, radius in STORES:
         write(JCR_ROOT / f"content/dam/mcd/stores/{store_id}/.content.xml",
               fragment_xml("store", name, address, {
@@ -377,7 +651,10 @@ def main() -> None:
 
     # DAM folders for the fragments (parents of the generated fragments)
     for folder, title in (("products", "Menu products"), ("categories", "Menu categories"),
-                          ("offers", "Offers and deals"), ("stores", "Restaurants")):
+                          ("offers", "Offers and deals"), ("stores", "Restaurants"),
+                          ("heroes", "Hero banners"), ("sections", "Page sections"),
+                          ("navigation", "Navigation links"), ("features", "Feature flags"),
+                          ("settings", "Site settings")):
         write(JCR_ROOT / f"content/dam/mcd/{folder}/.content.xml", f"""<?xml version="1.0" encoding="UTF-8"?>
 <jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
     jcr:primaryType="sling:Folder">
@@ -387,7 +664,27 @@ def main() -> None:
 </jcr:root>
 """)
 
+    validate_models()
     print("Done.")
+
+
+def validate_models() -> None:
+    """Guard the fragment-editor workaround: ``required`` must stay a String.
+
+    FileVault's ``{Boolean}true`` form stores a Boolean, which crashes
+    AEM 2024.8's fragment editor (see the ``field`` docstring).
+    """
+    models_dir = JCR_ROOT / "conf/mcd/settings/dam/cfm/models"
+    offenders = [
+        path
+        for path in models_dir.glob("*/.content.xml")
+        if 'required="{Boolean}' in path.read_text(encoding="utf-8")
+    ]
+    if offenders:
+        raise SystemExit(
+            "required must be the string 'on', not a typed Boolean: "
+            + ", ".join(str(path) for path in offenders)
+        )
 
 
 if __name__ == "__main__":

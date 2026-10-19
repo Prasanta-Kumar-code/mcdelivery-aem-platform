@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" xmlns:granite="http://www.adobe.com/jcr/granite/1.0"
+    jcr:primaryType="cq:Template"
+    allowedPaths="[/content/dam/mcd/navigation(/.*)?]"
+    ranking="{Long}100">
+    <jcr:content
+        cq:scaffolding="/conf/mcd/settings/dam/cfm/models/navigation-link/jcr:content/model"
+        cq:templateType="/libs/settings/dam/cfm/model-types/fragment"
+        jcr:primaryType="cq:PageContent"
+        jcr:title="Navigation Link"
+        sling:resourceSuperType="dam/cfm/models/console/components/data/entity"
+        sling:resourceType="dam/cfm/models/console/components/data/entity/default">
+        <model
+            cq:targetPath="/content/dam/mcd/navigation"
+            jcr:primaryType="cq:PageContent"
+            sling:resourceType="wcm/scaffolding/components/scaffolding"
+            dataTypesConfig="/mnt/overlay/settings/dam/cfm/models/formbuilderconfig/datatypes"
+            maxGeneratedOrder="50">
+            <cq:dialog
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="cq/gui/components/authoring/dialog">
+                <content
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="granite/ui/components/coral/foundation/fixedcolumns">
+                    <items
+                        jcr:primaryType="nt:unstructured"
+                        maxGeneratedOrder="50">
+                        <label
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+        cfm-element="Label"
+        fieldLabel="Label"
+        listOrder="1"
+        metaType="text-single"
+        name="label"
+        renderReadOnly="false"
+        showEmptyInReadOnly="true"
+        valueType="string"
+        required="on"
+        maxlength="60"/>
+                        <href
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+        cfm-element="Link"
+        fieldLabel="Link"
+        listOrder="2"
+        metaType="text-single"
+        name="href"
+        renderReadOnly="false"
+        showEmptyInReadOnly="true"
+        valueType="string"
+        required="on"
+        maxlength="300"/>
+                        <linkGroup
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+        cfm-element="Link group"
+        fieldLabel="Link group"
+        listOrder="3"
+        metaType="text-single"
+        name="linkGroup"
+        renderReadOnly="false"
+        showEmptyInReadOnly="true"
+        valueType="string"
+        required="on"
+        emptyText="header | footer-company | footer-policy | footer-tools | footer-social"/>
+                        <iconKey
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+        cfm-element="Icon key"
+        fieldLabel="Icon key"
+        listOrder="4"
+        metaType="text-single"
+        name="iconKey"
+        renderReadOnly="false"
+        showEmptyInReadOnly="true"
+        valueType="string"
+        maxlength="40"
+        emptyText="facebook | twitter | instagram"/>
+                        <displayOrder
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/coral/foundation/form/numberfield"
+        cfm-element="Display order"
+        fieldLabel="Display order"
+        listOrder="5"
+        metaType="number"
+        name="displayOrder"
+        renderReadOnly="false"
+        showEmptyInReadOnly="true"
+        valueType="long"
+        typeHint="long"/>
+                        <externalLink
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/coral/foundation/form/checkbox"
+        cfm-element="Opens in a new tab"
+        fieldLabel="Opens in a new tab"
+        listOrder="6"
+        metaType="boolean"
+        name="externalLink"
+        renderReadOnly="false"
+        showEmptyInReadOnly="true"
+        valueType="boolean"
+        text="Open in a new tab"/>
+                        <isActive
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/coral/foundation/form/checkbox"
+        cfm-element="Active"
+        fieldLabel="Active"
+        listOrder="7"
+        metaType="boolean"
+        name="isActive"
+        renderReadOnly="false"
+        showEmptyInReadOnly="true"
+        valueType="boolean"
+        text="Show this link"/>
+                        <isCta
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/coral/foundation/form/checkbox"
+        cfm-element="Call to action"
+        fieldLabel="Call to action"
+        listOrder="8"
+        metaType="boolean"
+        name="isCta"
+        renderReadOnly="false"
+        showEmptyInReadOnly="true"
+        valueType="boolean"
+        text="Highlight as a call to action"/>
+                    </items>
+                </content>
+            </cq:dialog>
+        </model>
+    </jcr:content>
+</jcr:root>

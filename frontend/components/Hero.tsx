@@ -1,67 +1,84 @@
+import Image from "next/image";
 import { GoldenArches } from "@/components/FoodArt";
+import { HeroContent, SiteSettings } from "@/types/site-content";
 
 export default function Hero({
-  variant,
+  hero,
+  settings,
 }: {
-  /** "campaign" renders a promotion-style hero, "deal" renders a deal banner */
-  variant?: "campaign" | "deal";
+  readonly hero: HeroContent;
+  readonly settings: SiteSettings;
 }) {
+  const variant = hero.variant ?? "campaign";
+  const primaryLabel = hero.primaryCtaLabel ?? settings.orderCtaLabel;
+  const primaryHref = hero.primaryCtaHref ?? settings.orderCtaHref;
+
   return (
     <section
-      className={`hero hero--${(variant ?? "campaign")}${variant === "deal" ? " hero--deal" : ""}`}
+      className={`hero hero--${variant}${variant === "deal" ? " hero--deal" : ""}`}
       id="hero"
       aria-labelledby="hero-heading"
     >
       <div className="hero__inner">
         <div className="hero__copy">
-          {variant === "deal" ? (
-            <>
-              <p className="hero__eyebrow">Today only</p>
-              <h1 id="hero-heading">
-                <span className="hero__headline">Free delivery over ₹499</span>
-                <span className="hero__sub">on orders placed before 9 PM</span>
-              </h1>
-              <p className="hero__desc">
-                Build your basket now and get your favourite McDelivery meal at
-                your doorstep, hot and ready.
-              </p>
-            </>
+          {hero.eyebrow && <p className="hero__eyebrow">{hero.eyebrow}</p>}
+
+          <h1 id="hero-heading">
+            <span className="hero__headline">{hero.headline}</span>
+            {hero.subheadline && (
+              <span className="hero__sub">{hero.subheadline}</span>
+            )}
+          </h1>
+
+          {hero.description && <p className="hero__desc">{hero.description}</p>}
+
+          <div className="hero__actions">
+            {primaryLabel && primaryHref && (
+              <a className="btn btn--primary" href={primaryHref}>
+                {primaryLabel}
+              </a>
+            )}
+            {hero.secondaryCtaLabel && hero.secondaryCtaHref && (
+              <a className="btn btn--ghost" href={hero.secondaryCtaHref}>
+                {hero.secondaryCtaLabel}
+              </a>
+            )}
+          </div>
+        </div>
+
+        <div className="hero__art">
+          {hero.image ? (
+            <Image
+              src={`/api/aem-asset?path=${encodeURIComponent(hero.image._path)}`}
+              alt={hero.headline}
+              fill
+              sizes="(max-width: 900px) 90vw, 480px"
+              style={{ objectFit: "contain" }}
+              priority
+            />
           ) : (
             <>
-              <p className="hero__eyebrow">Made for your moment</p>
-              <h1 id="hero-heading"><span className="hero__headline">Good food. Good mood.</span></h1>
-              <p className="hero__desc">
-                Freshly grilled, made to order. Browse the menu, build your
-                favourite meal and get it delivered hot.
-              </p>
-              <div className="hero__actions">
-                <a className="btn btn--primary" href="#menu">
-                  Order now
-                </a>
-                <a className="btn btn--ghost" href="#deals">
-                  See the deals
-                </a>
+              <span aria-hidden="true">
+                <GoldenArches stroke="#F0B04A" className="hero__arches" />
+              </span>
+              <div className="hero__art-stack" aria-hidden="true">
+                <div className="hero__art-stack-item hero__art-stack-burger">
+                  <Burger />
+                </div>
+                <div className="hero__art-stack-item">
+                  <Fries />
+                </div>
+                <div className="hero__art-stack-item">
+                  <GoldenArches stroke="#F0B04A" className="hero__art-stack-item-burger" />
+                </div>
               </div>
             </>
           )}
-        </div>
-
-        <div className="hero__art" aria-hidden="true">
-          <GoldenArches stroke="#F0B04A" className="hero__arches" />
-          <div className="hero__art-floating">
-            <span className="hero__tag">Free delivery over ₹499</span>
-          </div>
-          <div className="hero__art-stack">
-            <div className="hero__art-stack-item hero__art-stack-burger">
-              <Burger />
+          {hero.badgeText && (
+            <div className="hero__art-floating">
+              <span className="hero__tag">{hero.badgeText}</span>
             </div>
-            <div className="hero__art-stack-item">
-              <Fries />
-            </div>
-            <div className="hero__art-stack-item">
-              <GoldenArches stroke="#F0B04A" className="hero__art-stack-item-burger" />
-            </div>
-          </div>
+          )}
         </div>
       </div>
     </section>
@@ -103,7 +120,7 @@ function Burger() {
         <rect x={20} y={20} width={10} height={55} rx={2} fill="#F0B04A" />
         <rect x={60} y={16} width={40} height={40} rx={6} fill="#F0B04A" />
         <rect x={96} y={20} width="8" height="36" rx="2" fill="#3A506B" />
-        <rect x={20} y={20} width="8" height="55" rx={2} fill="#3A506B" />
+        <rect x={20} y={20} width="8" height="55" rx="2" fill="#3A506B" />
         <path d="M86 12 L86 22" stroke="#8F1420" strokeWidth={6} strokeLinecap="round" />
         <rect x={90} y={8} width={6} height={6} rx={2} fill="#F0B04A" />
         <rect x={72} y={46} width={10} height="6" rx={2} fill="#F0B04A" />

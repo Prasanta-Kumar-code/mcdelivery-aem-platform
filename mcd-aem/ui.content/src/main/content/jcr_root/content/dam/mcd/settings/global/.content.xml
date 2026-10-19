@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:dam="http://www.day.com/dam/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0"
+    jcr:primaryType="dam:Asset">
+    <jcr:content
+        jcr:primaryType="dam:AssetContent"
+        jcr:title="Global site settings"
+        jcr:description="Brand, copy, labels and SEO defaults for the storefront."
+        contentFragment="{Boolean}true">
+        <metadata
+            jcr:primaryType="nt:unstructured"
+            cq:tags="[]"/>
+        <data
+            jcr:primaryType="nt:unstructured"
+            cq:model="/conf/mcd/settings/dam/cfm/models/site-settings">
+            <master
+                jcr:primaryType="nt:unstructured"
+            brandName="McDelivery"
+            brandTagline="Hot &amp; fresh, right away"
+            allItemsLabel="All items"
+            accountLabel="Sign in"
+            orderCtaLabel="Order now"
+            orderCtaHref="#menu"
+            currencySymbol="&#8377;"
+            metaTitle="McDelivery | Good food. Good mood."
+            metaDescription="Browse the full McDelivery menu, unlock today&#x27;s deals and find the restaurant nearest to you."
+            defaultProductDescription="A delicious choice for your next meal."
+            vegLabel="Veg"
+            nonVegLabel="Non-veg"
+            addToCartLabel="Add to order"
+            cartEyebrow="Ready when you are"
+            cartTitle="Your order"
+            cartEmptyMessage="Your cart is empty."
+            cartSubtotalLabel="Subtotal"
+            checkoutLabel="Continue to checkout"
+            closeLabel="Close"
+            storeBadgeLabel="Accepts delivery orders"
+            footerCompanyTitle="Link"
+            footerPolicyTitle="Policy"
+            footerToolsTitle="Tools"
+            footerSocialTitle="Follow us"
+            copyright="&#169; 2026 McDelivery. A learning project &#8212; not affiliated with McDonald&#x27;s."
+            footerNote="Learning project &#8212; built with AEM, Next.js, Spring Boot and PostgreSQL."
+            bannerMessage="Showing bundled seed content because {count} content source(s) could not be reached"
+            bannerHint="Start the AEM SDK and install the mcd content package to load the authored experience instead."
+            copyCodeLabel="Copy code"
+            copiedLabel="Copied"
+            saveLabel="Save"
+            itemSingularLabel="item"
+            itemPluralLabel="items"
+            perItemLabel="each"
+            removeLabel="Remove"
+            locale="en-IN"
+            isActive="{Boolean}true"/>
+        </data>
+    </jcr:content>
+</jcr:root>

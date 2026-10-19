@@ -36,7 +36,7 @@
         renderReadOnly="false"
         showEmptyInReadOnly="true"
         valueType="string"
-        required="{Boolean}true"/>
+        required="on"/>
                         <name
         jcr:primaryType="nt:unstructured"
         sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
@@ -48,7 +48,7 @@
         renderReadOnly="false"
         showEmptyInReadOnly="true"
         valueType="string"
-        required="{Boolean}true"/>
+        required="on"/>
                         <address
         jcr:primaryType="nt:unstructured"
         sling:resourceType="dam/cfm/admin/components/authoring/contenteditor/multieditor"

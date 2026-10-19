@@ -36,7 +36,7 @@
         renderReadOnly="false"
         showEmptyInReadOnly="true"
         valueType="string"
-        required="{Boolean}true"
+        required="on"
         maxlength="160"/>
                         <sku
         jcr:primaryType="nt:unstructured"
@@ -49,7 +49,7 @@
         renderReadOnly="false"
         showEmptyInReadOnly="true"
         valueType="string"
-        required="{Boolean}true"
+        required="on"
         maxlength="64"/>
                         <description
         jcr:primaryType="nt:unstructured"
@@ -73,7 +73,7 @@
         renderReadOnly="false"
         showEmptyInReadOnly="true"
         valueType="long"
-        required="{Boolean}true"
+        required="on"
         typeHint="long"/>
                         <currency
         jcr:primaryType="nt:unstructured"
