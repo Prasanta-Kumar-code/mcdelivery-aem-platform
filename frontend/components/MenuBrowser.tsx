@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import CategoryBar from "@/components/CategoryBar";
 import ProductCard from "@/components/ProductCard";
 import { Category } from "@/types/category";
@@ -9,7 +10,6 @@ import { Product } from "@/types/product";
 export default function MenuBrowser({
   categories,
   products,
-  selectedCategory,
   section,
   settings,
   showFilters = true,
@@ -17,12 +17,12 @@ export default function MenuBrowser({
 }: {
   readonly categories: Category[];
   readonly products: Product[];
-  readonly selectedCategory: string;
   readonly section: PageSection;
   readonly settings: SiteSettings;
   readonly showFilters?: boolean;
   readonly showVegBadges?: boolean;
 }) {
+  const [selectedCategory, setSelectedCategory] = useState("all");
   const visibleProducts =
     selectedCategory === "all"
       ? products
@@ -41,6 +41,7 @@ export default function MenuBrowser({
             ...categories,
           ]}
           selectedCategory={selectedCategory}
+          onSelectCategory={setSelectedCategory}
         />
       )}
 

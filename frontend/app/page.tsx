@@ -24,24 +24,8 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function Home({
-  searchParams,
-}: {
-  searchParams: Promise<{
-    category?: string | string[];
-  }>;
-}) {
-  const params = await searchParams;
-  const requestedCategory =
-    typeof params.category === "string" ? params.category : undefined;
-
+export default async function Home() {
   const [menu, site] = await Promise.all([fetchMenuData(), fetchSiteContent()]);
-
-  const validCategories = new Set(menu.categories.map((category) => category.slug));
-  const selectedCategory =
-    requestedCategory && validCategories.has(requestedCategory)
-      ? requestedCategory
-      : "all";
 
   const feature = (flagKey: string) => isFeatureEnabled(site.flags, flagKey);
 
@@ -68,7 +52,6 @@ export default async function Home({
             key={key}
             categories={menu.categories}
             products={menu.products}
-            selectedCategory={selectedCategory}
             section={section}
             settings={site.settings}
             showFilters={feature("menuFilters")}

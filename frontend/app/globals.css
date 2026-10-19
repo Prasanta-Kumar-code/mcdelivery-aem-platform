@@ -698,9 +698,11 @@ section[id],
   border: 1px solid var(--line);
   border-radius: 999px;
   color: var(--muted);
+  cursor: pointer;
   flex: 0 0 auto;
   font-size: 0.83rem;
   font-weight: 750;
+  font-family: inherit;
   padding: 0.72rem 1.05rem;
   text-decoration: none;
   transition: background 160ms ease, color 160ms ease, transform 160ms ease;
